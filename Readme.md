@@ -1,8 +1,7 @@
 ﻿# Личный проект «YetiCave» 
 
 * Студент: [Виталий Брюховецкий](https://up.htmlacademy.ru/php/2/user/510505).
-* Наставник: [Павел Кузнецов]
-(https://htmlacademy.ru/profile/id417075).
+* Наставник: [Павел Кузнецов](https://htmlacademy.ru/profile/id417075).
 
 ---
 
