@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $is_auth = (bool) rand(0, 1);
 
 $user_name = 'Константин';
@@ -18,6 +18,7 @@ $now = strtotime('now');
 
 // далее нужно вычислить оставшееся время до начала следующих суток и записать его в переменную $lot_time_remaining
 // ...
+$lot_time_remaining = date("H:i", $tomorrow - $now)
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -47,7 +48,7 @@ $now = strtotime('now');
 
             <?php if ($is_auth): ?>
                 <div class="user-menu__image">
-                    <img src="$user_avatar" width="40" height="40" alt="Пользователь">
+                    <img src=<?=$user_avatar; ?> width="40" height="40" alt="Пользователь">
                 </div>
                 <div class="user-menu__logged">
                     <p> <?=$user_name; ?> </p>
