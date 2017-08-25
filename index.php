@@ -18,7 +18,8 @@ $now = strtotime('now');
 
 // далее нужно вычислить оставшееся время до начала следующих суток и записать его в переменную $lot_time_remaining
 // ...
-$lot_time_remaining = floor(($tomorrow - $now) / 36000) . floor(($tomorrow - $now) / 3600 % 10) . ":" . floor(($tomorrow - $now) % 60 / 10) . (($tomorrow - $now) % 60) % 10;
+$deta_time = $tomorrow - $now;
+$lot_time_remaining = floor($deta_time / 36000) . floor($deta_time / 3600 % 10) . ":" . floor($deta_time % 3600 / 600) . floor($deta_time % 3600 / 60) % 10;
 ?>
 <!DOCTYPE html>
 <html lang="ru">
