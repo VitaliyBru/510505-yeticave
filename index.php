@@ -50,7 +50,7 @@ $lot_time_remaining = sprintf("%02d:%02d", $delta_time_h, $delta_time_m);
 
             <?php if ($is_auth): ?>
                 <div class="user-menu__image">
-                    <img src=<?=$user_avatar; ?> width="40" height="40" alt="Пользователь">
+                    <img src="<?=$user_avatar; ?>"" width="40" height="40" alt="Пользователь">
                 </div>
                 <div class="user-menu__logged">
                     <p> <?=$user_name; ?> </p>
