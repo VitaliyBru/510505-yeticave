@@ -18,7 +18,9 @@ $now = strtotime('now');
 
 // далее нужно вычислить оставшееся время до начала следующих суток и записать его в переменную $lot_time_remaining
 // ...
-$lot_time_remaining = gmdate("H:i", $tomorrow - $now);
+$delta_time_h = floor(($tomorrow - $now) / 3600);
+$delta_time_m = floor(($tomorrow - $now) % 3600 / 60);
+$lot_time_remaining = sprintf("%02d:%02d", $delta_time_h, $delta_time_m);
 ?>
 <!DOCTYPE html>
 <html lang="ru">
