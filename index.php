@@ -21,9 +21,6 @@ $now = strtotime('now');
 $delta_time_h = floor(($tomorrow - $now) / 3600);
 $delta_time_m = floor(($tomorrow - $now) % 3600 / 60);
 $lot_time_remaining = sprintf("%02d:%02d", $delta_time_h, $delta_time_m);
-?>
-
-<?php    
 
 //The array below contains a list of type goods
 
