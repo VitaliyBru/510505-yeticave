@@ -8,10 +8,10 @@ $bets = [
     ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
 ];
 
-$ts_now = strtotime('now');
 // A function for convertion time stamp to usable for human format
-function ts_to_time_or_date ($_ts, $_ts_now ){
-    $delta_ts = $_ts_now - $_ts;
+function ts_to_time_or_date ($_ts){
+    $ts_now = strtotime('now');
+    $delta_ts = $ts_now - $_ts;
     if($delta_ts >= 86400)
         return date('d.m.y в H:i', $_ts);
     elseif ($delta_ts >= 7200)
@@ -131,7 +131,7 @@ function ts_to_time_or_date ($_ts, $_ts_now ){
                         <tr class="history__item">
                             <td class="history__name"><?=$bet['name']; ?><!-- имя автора--></td>
                             <td class="history__price"><?=$bet['price']; ?><!-- цена--> р</td>
-                            <td class="history__time"><?=ts_to_time_or_date($bet['ts'], $ts_now); ?><!-- дата в человеческом формате--></td>
+                            <td class="history__time"><?=ts_to_time_or_date($bet['ts']); ?><!-- дата в человеческом формате--></td>
                         </tr>
                     <?php endforeach; ?>
                     </table>
