@@ -13,13 +13,14 @@ $ts_now = strtotime('now');
 function ts_to_time_or_date ($_ts, $_ts_now ){
     $delta_ts = $_ts_now - $_ts;
     if($delta_ts >= 86400)
-        return date('d.m.y H:i', $_ts);
+        return date('d.m.y в H:i', $_ts);
     elseif ($delta_ts >= 7200)
         $format = 'H Часов назад';
         elseif ($delta_ts >= 3600)
             return 'Час назад';
             else $format = 'i минут назад';
-    return gmdate($format, $delta_ts);
+    $interval = gmdate($format, $delta_ts);
+    return ltrim($interval, '0');
 }
 
 ?>
