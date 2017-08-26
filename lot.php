@@ -1,5 +1,5 @@
 <?php
-
+date_default_timezone_set('Europe/Moscow');
 // ставки пользователей, которыми надо заполнить таблицу
 $bets = [
     ['name' => 'Иван', 'price' => 11500, 'ts' => strtotime('-' . rand(1, 50) .' minute')],
@@ -7,6 +7,21 @@ $bets = [
     ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime('-' . rand(25, 50) .' hour')],
     ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
 ];
+
+$ts_now = strtotime('now');
+// A function for convertion time stamp to usable for human format
+function ts_to_time_or_date ($_ts, $_ts_now ){
+    $delta_ts = $_ts_now - $_ts;
+    if($delta_ts >= 86400)
+        return date('d.m.y H:i', $_ts);
+    elseif ($delta_ts >= 7200)
+        $format = 'H Часов назад';
+        elseif ($delta_ts >= 3600)
+            return 'Час назад';
+            else $format = 'i минут назад';
+    return gmdate($format, $delta_ts);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -111,11 +126,13 @@ $bets = [
                     <h3>История ставок (<span>4</span>)</h3>
                     <!-- заполните эту таблицу данными из массива $bets-->
                     <table class="history__list">
+                        <?php foreach ($bets as $bet): ?>
                         <tr class="history__item">
-                            <td class="history__name"><!-- имя автора--></td>
-                            <td class="history__price"><!-- цена--> р</td>
-                            <td class="history__time"><!-- дата в человеческом формате--></td>
+                            <td class="history__name"><?=$bet['name']; ?><!-- имя автора--></td>
+                            <td class="history__price"><?=$bet['price']; ?><!-- цена--> р</td>
+                            <td class="history__time"><?=ts_to_time_or_date($bet['ts'], $ts_now); ?><!-- дата в человеческом формате--></td>
                         </tr>
+                    <?php endforeach; ?>
                     </table>
                 </div>
             </div>
