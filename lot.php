@@ -12,9 +12,10 @@ $bets = [
 // A function for convertion time stamp to usable for human format
 function tsToTimeOrDate($_ts)
 {
+    $format = 'd.m.y в H:i';
     $delta_ts = strtotime('now') - $_ts;
     if ($delta_ts >= 86400) {
-        return date('d.m.y в H:i', $_ts);
+        return date($format, $_ts);
     } elseif ($delta_ts >= 7200) {
         $format = 'H Часов назад';
     } elseif ($delta_ts >= 3600) {
