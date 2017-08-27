@@ -9,10 +9,19 @@ $bets = [
     ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
 ];
 
-// A function for convertion time stamp to usable for human format
+/**
+* This function returns a data when the timestamp was created
+* or a time between the timestamp and current time.
+*
+* @param int $_ts receive Unix timestamp format data.
+*
+* @return string
+*/
 function tsToTimeOrDate($_ts)
 {
+    /** @var string $format */
     $format = 'd.m.y в H:i';
+    /** @var int $delta_ts */
     $delta_ts = strtotime('now') - $_ts;
     if ($delta_ts >= 86400) {
         return date($format, $_ts);
@@ -23,6 +32,7 @@ function tsToTimeOrDate($_ts)
     } else {
         $format = 'i минут назад';
     }
+    /** @var string $interval */
     $interval = gmdate($format, $delta_ts);
     return ltrim($interval, '0');
 }
