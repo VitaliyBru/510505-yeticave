@@ -10,7 +10,7 @@ $bets = [
 ];
 
 /**
-* This function returns a data when the timestamp was created
+* This function returns a data of the timespamp was created
 * or a time between the timestamp and current time.
 *
 * @param int $_ts receive Unix timestamp format data.
