@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Europe/Moscow');
 
 // ставки пользователей, которыми надо заполнить таблицу
 $bets = [
@@ -7,6 +8,34 @@ $bets = [
     ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime('-' . rand(25, 50) .' hour')],
     ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
 ];
+
+/**
+* This function returns a data of the timespamp was created
+* or a time between the timestamp and current time.
+*
+* @param int $_ts receive Unix timestamp format data.
+*
+* @return string
+*/
+function tsToTimeOrDate($_ts)
+{
+    /** @var string $format */
+    $format = 'd.m.y в H:i';
+    /** @var int $delta_ts */
+    $delta_ts = strtotime('now') - $_ts;
+    if ($delta_ts >= 86400) {
+        return date($format, $_ts);
+    } elseif ($delta_ts >= 7200) {
+        $format = 'H Часов назад';
+    } elseif ($delta_ts >= 3600) {
+        return 'Час назад';
+    } else {
+        $format = 'i минут назад';
+    }
+    /** @var string $interval */
+    $interval = gmdate($format, $delta_ts);
+    return ltrim($interval, '0');
+}
 ?>
 
 <!DOCTYPE html>
@@ -111,11 +140,13 @@ $bets = [
                     <h3>История ставок (<span>4</span>)</h3>
                     <!-- заполните эту таблицу данными из массива $bets-->
                     <table class="history__list">
+                        <?php foreach ($bets as $bet): ?>
                         <tr class="history__item">
-                            <td class="history__name"><!-- имя автора--></td>
-                            <td class="history__price"><!-- цена--> р</td>
-                            <td class="history__time"><!-- дата в человеческом формате--></td>
+                            <td class="history__name"><?=$bet['name']; ?></td><!-- имя автора-->
+                            <td class="history__price"><?=$bet['price']; ?>р</td><!-- цена--> 
+                            <td class="history__time"><?=tsToTimeOrDate($bet['ts']); ?></td><!-- дата в человеческом формате-->
                         </tr>
+                    <?php endforeach; ?>
                     </table>
                 </div>
             </div>

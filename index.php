@@ -117,13 +117,13 @@ $lots_list = [
             <h2>Открытые лоты</h2>
             <select class="lots__select">
                 <option>Все категории</option>
-                <?php foreach ($goods_type as $key => $good_type): ?>
-                    <option><?=$good_type; ?></option>
+                <?php foreach ($goods_type as $item_type): ?>
+                    <option><?=$item_type; ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
         <ul class="lots__list">
-            <?php foreach ($lots_list as $key => $lot): ?>
+            <?php foreach ($lots_list as $lot): ?>
             <li class="lots__item lot">
                 <div class="lot__image">
                     <img src="<?=$lot ["img_url"]; ?>" width="350" height="260" alt="Сноуборд">
