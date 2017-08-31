@@ -1,5 +1,13 @@
 <?php
-function renderTemplate($includeFile, $data = array())
+/**
+* A template engine combine templates with a data to produce result documents.
+*
+* @param string $includeFile Contains name of file teplate (file.php) and path to it.
+* @param array $data Contains a data for assembling html code.
+*
+* @return string.
+*/
+function renderTemplate(string $includeFile, $data = array())
 {
 	/** @var array $goods_type A list of goods tipes */
 	$goods_type;
