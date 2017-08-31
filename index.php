@@ -46,8 +46,7 @@ $page_content = renderTemplate(
     'time' => $lot_time_remaining
     ]
     );
-/** @var string $layout_content Contains html code compiled for to send on user devise */
-$layout_content = renderTemplate(
+echo renderTemplate(
     'layout', 
     [
     'content' => $page_content, 
@@ -57,6 +56,4 @@ $layout_content = renderTemplate(
     'title' => 'Главная'
     ]
     );
-
-print($layout_content);
 ?>
