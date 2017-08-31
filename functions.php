@@ -2,61 +2,101 @@
 /**
 * A template engine combine templates with a data to produce result documents.
 *
-* @param string $includeFile Contains name of file teplate (file.php) and path to it.
+* @param string $includeFile Contains name of file teplate (without '.php' exctend).
 * @param array $data Contains a data for assembling html code.
 *
 * @return string.
 */
 function renderTemplate(string $includeFile, $data = array())
 {
-	/** @var array $goods_type A list of goods tipes */
 	$goods_type;
-	/** @var array $lots_list A list of lots */
-	$lots_list;
-	/** @var string $lot_time_remaining A time (hh:mm) before the lot ends */
-	$lot_time_remaining;
-	/** @var bool $is_auth user authorization (true or false) */
-	$is_auth;
-	/** @var string $user_name Contains user name */
-	$user_name;
-	/** @var string $user_avatar Contains user avatar source */
-	$user_avatar;
-	/** @var string $content Contains html code */
-	$content;
-	/** @var string $title A document title */
-	$title;
-
 	if (isset($data['types'])) {
 		$goods_type = &$data['types'];
 	}
+	$lots_list;
 	if (isset($data['lots'])) {
 		$lots_list = &$data['lots'];
 	}
+	$lot_time_remaining;
 	if (isset($data['time'])) {
 		$lot_time_remaining = $data['time'];
 	}
+	$is_auth;
 	if (isset($data['auth'])) {
 		$is_auth = $data['auth'];
 	}
+	$user_name;
     if (isset($data['name'])) {
     	$user_name =$data['name'];
     }
+    $user_avatar;
     if (isset($data['avatar'])) {
     	$user_avatar = $data['avatar'];
     }
+    $content;
     if (isset($data['content'])) {
     	$content = &$data['content'];
     }
+    $title;
     if (isset($data['title'])) {
     	$title = $data['title'];
     }
 
-    ob_start();
+    $includeFile = 'templates/' . $includeFile . '.php';
+
+    $content_out = "";
     if (file_exists($includeFile)) {
+    	ob_start();
     	require_once ($includeFile);
-    } else {
-    	print("");
+    	$content_out = ob_get_clean();
     }
-	return ob_get_clean();
+	return $content_out;
+}
+
+/**
+* This function returns a data of the timestamp was created
+* or a time between the timestamp and current time.
+*
+* @param int $_ts receive Unix timestamp format data.
+*
+* @return string
+*/
+function tsToTimeOrDate(int $_ts)
+{
+    /** @array $caseSystemRu[$firstKey][$secondKey] contains words with russion case endings */
+    $caseSystemRu = [
+        'hours' => ['Час', ' час', ' часа', ' часов'],
+        'minutes' => ['Минуту', ' минуту', ' минуты', ' минут']     
+    ];
+    /** @var string $firstKey contains a first keyword for $caseSystemRu array */
+    $firstKey = 'hours';
+    /** @var int $secondKey contains a second keyword for $caseSystemRu */
+    $secondKey = 0;
+    /** @var int $delta_ts contains time interval in seconds */
+    $delta_ts = strtotime('now') - $_ts;
+    if ($delta_ts >= SECONDS_IN_DAY) {
+        return date('d.m.y в H:i', $_ts);
+    }
+    //** @var string $interval contains time interval in Hour(s) or Minute(s) */
+    $interval = gmdate('H', $delta_ts);
+    if ($interval === '00') {
+        $interval = gmdate('i', $delta_ts);
+        $firstKey = 'minutes';
+    }
+    /** @var int $first_number contains first number of $interval */
+    $first_number = (int) $interval[0];
+    /** @var int $last_number contains second number of $interval */
+    $last_number = (int) $interval[1];
+    if ($last_number > 4 || $first_number == 1 || $last_number == 0) {
+        $secondKey = 3;
+    } elseif ($last_number > 1 && $last_number < 5) {
+        $secondKey = 2;
+    } elseif ($interval === '01') {
+        $interval = '00';
+    } else {
+        $secondKey = 1;
+    }
+    $interval .= ($caseSystemRu[$firstKey][$secondKey] . ' назад');
+    return ltrim($interval, '0');
 }
 ?>
