@@ -39,7 +39,7 @@ $lots_list = [
 
 /** @var string $page_content Contains html code */
 $page_content = renderTemplate(
-    'templates/index.php', 
+    'index', 
     [
     'types' => $goods_type, 
     'lots' => $lots_list, 
@@ -48,7 +48,7 @@ $page_content = renderTemplate(
     );
 /** @var string $layout_content Contains html code compiled for to send on user devise */
 $layout_content = renderTemplate(
-    'templates/layout.php', 
+    'layout', 
     [
     'content' => $page_content, 
     'auth' => $is_auth, 
@@ -58,7 +58,5 @@ $layout_content = renderTemplate(
     ]
     );
 
-ob_start("ob_gzhandler");
 print($layout_content);
-ob_end_flush();
 ?>
