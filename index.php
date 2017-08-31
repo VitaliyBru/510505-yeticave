@@ -58,7 +58,7 @@ $layout_content = renderTemplate(
     ]
     );
 
-ob_start(ob_gzhandler);
+ob_start("ob_gzhandler");
 print($layout_content);
 ob_end_flush();
 ?>
