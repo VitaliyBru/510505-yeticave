@@ -29,7 +29,7 @@
                     <img src="<?=$user_avatar; ?>" width="40" height="40" alt="Пользователь">
                 </div>
                 <div class="user-menu__logged">
-                    <p> <?=$user_name; ?> </p>
+                    <p> <?=htmlspecialchars($user_name); ?> </p>
                 </div>
             <?php else: ?>
                 <ul class="user-menu__list">
