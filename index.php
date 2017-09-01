@@ -1,7 +1,7 @@
 ﻿<?php
 require_once 'functions.php';
 
-$is_auth = (bool) rand(0, 1);
+$is_auth = (bool)rand(0, 1);
 
 $user_name = 'Константин';
 $user_avatar = 'img/user.jpg';
@@ -39,21 +39,21 @@ $lots_list = [
 
 /** @var string $page_content Contains html code */
 $page_content = renderTemplate(
-    'index', 
+    'index',
     [
-    'goods_type' => $goods_type, 
-    'lots_list' => $lots_list, 
-    'lot_time_remaining' => $lot_time_remaining
+        'goods_type' => $goods_type,
+        'lots_list' => $lots_list,
+        'lot_time_remaining' => $lot_time_remaining
     ]
-    );
+);
 echo renderTemplate(
-    'layout', 
+    'layout',
     [
-    'page_content' => $page_content, 
-    'is_auth' => $is_auth, 
-    'user_name' => $user_name, 
-    'user_avatar' => $user_avatar, 
-    'title' => 'Главная'
+        'page_content' => $page_content,
+        'is_auth' => $is_auth,
+        'user_name' => $user_name,
+        'user_avatar' => $user_avatar,
+        'title' => 'Главная'
     ]
-    );
+);
 ?>
