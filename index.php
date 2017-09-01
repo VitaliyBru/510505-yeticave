@@ -29,12 +29,12 @@ $goods_type = ["Доски и лыжи", "Крепления", "Ботинки",
 
 /** @var array $lots_list the array contains information list about lots (item, type, price, URL img) */
 $lots_list = [
-0 => ["item" => "2014 Rossignol District Snowboard", "type" => "Доски и лыжи", "price" => "10999", "img_url" => "img/lot-1.jpg"],
-1 => ["item" => "DC Ply Mens 2016/2017 Snowboard", "type" => "Доски и лыжи", "price" => "159999", "img_url" => "img/lot-2.jpg"],
-2 => ["item" => "Крепления Union Contact Pro 2015 года размер L/XL", "type" => "Крепления", "price" => "8000", "img_url" => "img/lot-3.jpg"],
-3 => ["item" => "Ботинки для сноуборда DC Mutiny Charocal", "type" => "Ботинки", "price" => "10999", "img_url" => "img/lot-4.jpg"],
-4 => ["item" => "Куртка для сноуборда DC Mutiny Charocal", "type" => "Одежда", "price" => "7500", "img_url" => "img/lot-5.jpg"],
-5 => ["item" => "Маска Oakley Canopy", "type" => "Разное", "price" => "5400", "img_url" => "img/lot-6.jpg"]
+["item" => "2014 Rossignol District Snowboard", "type" => "Доски и лыжи", "price" => "10999", "img_url" => "img/lot-1.jpg"],
+["item" => "DC Ply Mens 2016/2017 Snowboard", "type" => "Доски и лыжи", "price" => "159999", "img_url" => "img/lot-2.jpg"],
+["item" => "Крепления Union Contact Pro 2015 года размер L/XL", "type" => "Крепления", "price" => "8000", "img_url" => "img/lot-3.jpg"],
+["item" => "Ботинки для сноуборда DC Mutiny Charocal", "type" => "Ботинки", "price" => "10999", "img_url" => "img/lot-4.jpg"],
+["item" => "Куртка для сноуборда DC Mutiny Charocal", "type" => "Одежда", "price" => "7500", "img_url" => "img/lot-5.jpg"],
+["item" => "Маска Oakley Canopy", "type" => "Разное", "price" => "5400", "img_url" => "img/lot-6.jpg"]
 ];
 
 /** @var string $page_content Contains html code */
