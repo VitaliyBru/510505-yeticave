@@ -9,12 +9,11 @@
 */
 function renderTemplate(string $includeFile, $data = array())
 {
-	extract($data, EXTR_REFS);
-
     $includeFile = 'templates/' . $includeFile . '.php';
 
     $content_out = "";
     if (file_exists($includeFile)) {
+    	extract($data, EXTR_REFS);
     	ob_start();
     	require_once ($includeFile);
     	$content_out = ob_get_clean();
