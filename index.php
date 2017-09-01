@@ -41,18 +41,18 @@ $lots_list = [
 $page_content = renderTemplate(
     'index', 
     [
-    'types' => $goods_type, 
-    'lots' => $lots_list, 
-    'time' => $lot_time_remaining
+    'goods_type' => $goods_type, 
+    'lots_list' => $lots_list, 
+    'lot_time_remaining' => $lot_time_remaining
     ]
     );
 echo renderTemplate(
     'layout', 
     [
-    'content' => $page_content, 
-    'auth' => $is_auth, 
-    'name' => $user_name, 
-    'avatar' => $user_avatar, 
+    'page_content' => $page_content, 
+    'is_auth' => $is_auth, 
+    'user_name' => $user_name, 
+    'user_avatar' => $user_avatar, 
     'title' => 'Главная'
     ]
     );

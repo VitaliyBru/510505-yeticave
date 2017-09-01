@@ -9,38 +9,7 @@
 */
 function renderTemplate(string $includeFile, $data = array())
 {
-	$goods_type;
-	if (isset($data['types'])) {
-		$goods_type = &$data['types'];
-	}
-	$lots_list;
-	if (isset($data['lots'])) {
-		$lots_list = &$data['lots'];
-	}
-	$lot_time_remaining;
-	if (isset($data['time'])) {
-		$lot_time_remaining = $data['time'];
-	}
-	$is_auth;
-	if (isset($data['auth'])) {
-		$is_auth = $data['auth'];
-	}
-	$user_name;
-    if (isset($data['name'])) {
-    	$user_name =$data['name'];
-    }
-    $user_avatar;
-    if (isset($data['avatar'])) {
-    	$user_avatar = $data['avatar'];
-    }
-    $content;
-    if (isset($data['content'])) {
-    	$content = &$data['content'];
-    }
-    $title;
-    if (isset($data['title'])) {
-    	$title = $data['title'];
-    }
+	extract($data, EXTR_REFS);
 
     $includeFile = 'templates/' . $includeFile . '.php';
 
