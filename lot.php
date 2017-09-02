@@ -7,10 +7,7 @@ define('SECONDS_IN_DAY', '86400');
 date_default_timezone_set('Europe/Moscow');
 
 /** @var int $lot_id Contains lot identification number */
-$lot_id = null;
-if (isset($_GET['lot_id'])){
-    $lot_id = $_GET['lot_id'];
-}
+$lot_id = $_GET['lot_id'] ?? null;
 if (!array_key_exists($lot_id, $lots_list)){
     http_response_code(404);
 }
