@@ -6,7 +6,8 @@ define('SECONDS_IN_DAY', '86400');
 
 date_default_timezone_set('Europe/Moscow');
 
-$lot_id;
+/** @var int $lot_id Contains lot identification number */
+$lot_id = null;
 if (isset($_GET['lot_id'])){
     $lot_id = $_GET['lot_id'];
 }
