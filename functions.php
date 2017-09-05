@@ -67,5 +67,45 @@ function tsToTimeOrDate(int $_ts)
     $interval .= ($caseSystemRu[$firstKey][$secondKey] . ' назад');
     return ltrim($interval, '0');
 }
-
+/**
+ * A function for checking is the string a decimal number.
+ *
+ * @var string $_string
+ *
+ * @return bool
+ */
+function isStringNumber(string $_string)
+{
+    $_number = (int) $_string;
+    if ((string) $_number == $_string) {
+        return true;
+    }
+    return false;
+}
+/**
+ * A function for checking format time data (dd.mm.yyyy).
+ *
+ * @var string $_strDate
+ *
+ * @return bool
+ */
+function isStrDate(string $_strDate)
+{
+    if (strlen($_strDate) != 10) {
+        return false;
+    }
+    for ($i = 0; $i <10; $i++) {
+        if ($i == 2 || $i == 5) {
+            if ($_strDate[$i] != '.') {
+                return false;
+            }
+        } else {
+            $tmp_number = (int) $_strDate[$i];
+            if ((string) $tmp_number != $_strDate[$i]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
 ?>
