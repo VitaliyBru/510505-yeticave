@@ -18,22 +18,17 @@ $is_invalid = [
     'lot_date' => false
 ];
 
-
+$lot_name = getFromPost($_POST, 'lot_name');
+$category = getFromPost($_POST, 'category');
+$message = getFromPost($_POST, 'message');
+$lot_rate = getFromPost($_POST, 'lot_rate');
+$lot_step = getFromPost($_POST, 'lot_step');
+$lot_date = getFromPost($_POST, 'lot_date');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        extract($_POST);
-    if ($lot_name == '') {
-        $is_invalid['form'] = true;
-        $is_invalid['lot_name'] = true;
-    }
-    if ($category == 'Выберите категорию') {
-        $is_invalid['form'] = true;
-        $is_invalid['category'] = true;
-    }
-    if ($message == '') {
-        $is_invalid['form'] = true;
-        $is_invalid['message'] = true;
-    }
+    setFlag($lot_name, '', 'lot_name', $is_invalid);
+    setFlag($category, 'Выберите категорию', 'category', $is_invalid);
+    setFlag($message, '', 'message', $is_invalid);
     if (!isStringNumber($lot_rate)) {
         $is_invalid['form'] = true;
         $is_invalid['lot_rate'] = true;
@@ -42,20 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $is_invalid['form'] = true;
         $is_invalid['lot_step'] = true;
     }
-    if (!isStrDate($lot_date)) {
+    if (!checkUserDate($lot_date)) {
         $is_invalid['form'] = true;
         $is_invalid['lot_date'] = true;
-    } else {
-        $date = new DateTime;
-        $date = DateTime::createFromFormat('d.m.Y H:i:s', $lot_date . ' 00:00:00');
-        if ($lot_date != $date->format('d.m.Y')) {
-            $is_invalid['form'] = true;
-            $is_invalid['lot_date'] = true;
-        }
-        if ($date->getTimestamp() < strtotime('now')) {
-            $is_invalid['form'] = true;
-            $is_invalid['lot_date'] = true;
-        }
     }
     if (isset($_FILES) && !$is_invalid['form']) {
         $file_name = $_FILES['userImage']['name'];
@@ -66,30 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $is_invalid['form'] = true;
     }
-}
-if (!isset($lot_name)) {
-    $lot_name = '';
-}
-if (!isset($category)) {
-    $category = '';
-}
-if (!isset($message)) {
-    $message = '';
-}
-if (!isset($img_url)) {
-    $img_url = '';
-}
-if (!isset($lot_rate)) {
-    $lot_rate = '';
-}
-if (!isset($lot_step)) {
-    $lot_step = '';
-}
-if (!isset($lot_date)) {
-    $lot_date = '';
-}
-if (!isset($is_uploaded)) {
-    $is_uploaded = false;
 }
 
 if (!$is_uploaded) {
@@ -127,7 +87,7 @@ echo renderTemplate(
         'is_auth' => $is_auth,
         'user_name' => $user_name,
         'user_avatar' => $user_avatar,
-        'title' => 'Главная'
+        'title' => 'Добавление лота'
     ]
 );
 ?>

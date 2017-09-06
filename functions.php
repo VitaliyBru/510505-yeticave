@@ -67,6 +67,7 @@ function tsToTimeOrDate(int $_ts)
     $interval .= ($caseSystemRu[$firstKey][$secondKey] . ' назад');
     return ltrim($interval, '0');
 }
+
 /**
  * A function for checking is the string a decimal number.
  *
@@ -82,30 +83,57 @@ function isStringNumber(string $_string)
     }
     return false;
 }
+
 /**
- * A function for checking format time data (dd.mm.yyyy).
+ * A function for checking: is the data correct? (dd.mm.yyyy).
  *
- * @var string $_strDate
+ * @var string $_str_date
  *
  * @return bool
  */
-function isStrDate(string $_strDate)
+function checkUserDate(string $_str_date)
 {
-    if (strlen($_strDate) != 10) {
-        return false;
-    }
-    for ($i = 0; $i <10; $i++) {
-        if ($i == 2 || $i == 5) {
-            if ($_strDate[$i] != '.') {
-                return false;
-            }
-        } else {
-            $tmp_number = (int) $_strDate[$i];
-            if ((string) $tmp_number != $_strDate[$i]) {
-                return false;
+    if (preg_match('#^[0-3](?(?<=3)[01]|\d)\.[01](?(?<=1)[0-2]|\d)\.20[1-3](?(?<=3)[0-4]|\d)$#', $_str_date)) {
+        if (date('d.m.Y', strtotime($_str_date)) == $_str_date) {
+            if (strtotime($_str_date) > strtotime('now')) {
+                return true;
             }
         }
     }
-    return true;
+    return false;
+}
+
+/**
+ * A function checks a key to see it has a valid variable name.
+ *
+ * @var &$post_data A reference to array
+ * @var string $key A keyword
+ * @var string $default_val A Default value
+ *
+ * @return  bool.
+ */
+function getFromPost(&$post_data, string $key, $default_val = '')
+{
+    if (array_key_exists($key, $post_data)) {
+        return $post_data[$key];
+    } else {
+        return $default_val;
+    }
+}
+/**
+ * A function compares two values.
+ *
+ * @var mixed $_variables first argument
+ * @var mixed $requisition second argument
+ * @var mixed $key word or number (key for array)
+ * @var &$flagsArray A reference to flags array
+ *
+ * @return void*/
+function setFlag($_variables, $requisition, $key, &$flagsArray)
+{
+    if ($_variables == $requisition) {
+        $flagsArray[$key] = true;
+        $flagsArray['form'] = true;
+    }
 }
 ?>
