@@ -87,7 +87,7 @@ $bets = [
                     <img src="<?=$lots_list[$lot_id]['img_url']; ?>" width="730" height="548" alt="Сноуборд">
                 </div>
                 <p class="lot-item__category">Категория: <span><?=htmlspecialchars($lots_list[$lot_id]['type']); ?></span></p>
-                <p class="lot-item__description"><?=htmlspecialchars($description[$lot_id]) ; ?></p>
+                <p class="lot-item__description"><?=htmlspecialchars($lots_list[$lot_id]['description']) ; ?></p>
             </div>
             <div class="lot-item__right">
                 <div class="lot-item__state">

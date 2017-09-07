@@ -68,4 +68,65 @@ function tsToTimeOrDate(int $_ts)
     return ltrim($interval, '0');
 }
 
+/**
+ * A function for checking: is the data correct? (dd.mm.yyyy).
+ *
+ * @var string $_str_date
+ *
+ * @return bool
+ */
+function checkUserDate(string $_str_date)
+{
+    if (preg_match('#^[0-3](?(?<=3)[01]|\d)\.[01](?(?<=1)[0-2]|\d)\.20[1-3](?(?<=3)[0-4]|\d)$#', $_str_date)) {
+        if (date('d.m.Y', strtotime($_str_date)) == $_str_date) {
+            if (strtotime($_str_date) > strtotime('now')) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function addFormToArray($post, $key, $section)
+{
+    if (array_key_exists($key, $post)) {
+        if ($section['require'] == 'not empty') {
+            if ($post[$key] != '') {
+                $section['value'] = $post[$key];
+                $section['valid'] = true;
+            } else {
+                $section['valid'] = false;
+            }
+        }
+        if ($section['require'] == 'number') {
+            $number = (int) $post[$key];
+            if ((string) $number == $post[$key] && $post[$key] > 0) {
+                $section['value'] = $post[$key];
+                $section['valid'] = true;
+            } else {
+                $section['valid'] = false;
+                $section['value'] = null;
+            }
+        }
+        if ($section['require'] == 'date') {
+            if (checkUserDate($post[$key])) {
+                $section['value'] = $post[$key];
+                $section['valid'] = true;
+            } else {
+                $section['valid'] = false;
+                $section['value'] = '';
+            }
+        }
+        if ($section['require'] == 'choice') {
+            if ($post[$key] != 'Выберите категорию'){
+                $section['value'] = $post[$key];
+                $section['valid'] = true;
+            } else {
+                $section['valid'] = false;
+                $section['value'] = '';
+            }
+        }
+    }
+    return $section;
+}
 ?>
