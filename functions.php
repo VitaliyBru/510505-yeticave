@@ -69,22 +69,6 @@ function tsToTimeOrDate(int $_ts)
 }
 
 /**
- * A function for checking is the string a decimal number.
- *
- * @var string $_string
- *
- * @return bool
- */
-function isStringNumber(string $_string)
-{
-    $_number = (int) $_string;
-    if ((string) $_number == $_string) {
-        return true;
-    }
-    return false;
-}
-
-/**
  * A function for checking: is the data correct? (dd.mm.yyyy).
  *
  * @var string $_str_date
@@ -103,37 +87,46 @@ function checkUserDate(string $_str_date)
     return false;
 }
 
-/**
- * A function checks a key to see it has a valid variable name.
- *
- * @var &$post_data A reference to array
- * @var string $key A keyword
- * @var string $default_val A Default value
- *
- * @return  bool.
- */
-function getFromPost(&$post_data, string $key, $default_val = '')
+function addFormToArray(&$post, $key, &$section)
 {
-    if (array_key_exists($key, $post_data)) {
-        return $post_data[$key];
-    } else {
-        return $default_val;
+    if (array_key_exists($key, $post)) {
+        if ($section['require'] == 'not empty') {
+            if ($post[$key] != '') {
+                $section['value'] = $post[$key];
+                $section['valid'] = true;
+            } else {
+                $section['valid'] = false;
+            }
+        }
+        if ($section['require'] == 'number') {
+            $number = (int) $post[$key];
+            if ((string) $number == $post[$key] && $post[$key] > 0) {
+                $section['value'] = $post[$key];
+                $section['valid'] = true;
+            } else {
+                $section['valid'] = false;
+                $section['value'] = null;
+            }
+        }
+        if ($section['require'] == 'date') {
+            if (checkUserDate($post[$key])) {
+                $section['value'] = $post[$key];
+                $section['valid'] = true;
+            } else {
+                $section['valid'] = false;
+                $section['value'] = '';
+            }
+        }
+        if ($section['require'] == 'choice') {
+            if ($post[$key] != 'Выберите категорию'){
+                $section['value'] = $post[$key];
+                $section['valid'] = true;
+            } else {
+                $section['valid'] = false;
+                $section['value'] = '';
+            }
+        }
     }
-}
-/**
- * A function compares two values.
- *
- * @var mixed $_variables first argument
- * @var mixed $requisition second argument
- * @var mixed $key word or number (key for array)
- * @var &$flagsArray A reference to flags array
- *
- * @return void*/
-function setFlag($_variables, $requisition, $key, &$flagsArray)
-{
-    if ($_variables == $requisition) {
-        $flagsArray[$key] = true;
-        $flagsArray['form'] = true;
-    }
+    return $section;
 }
 ?>

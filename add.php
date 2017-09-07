@@ -8,76 +8,53 @@ $user_avatar = 'img/user.jpg';
 // устанавливаем часовой пояс в Московское время
 date_default_timezone_set('Europe/Moscow');
 
-$is_invalid = [
-    'form' => false,
-    'lot_name' => false,
-    'category' => false,
-    'message' => false,
-    'lot_rate' => false,
-    'lot_step' => false,
-    'lot_date' => false
+$form_valid = true;
+$add_item_form = [
+    'lot_name' => ['value' => '', 'require' => 'not empty', 'valid' => true],
+    'category' => ['value' => '', 'require' => 'choice', 'valid' => true],
+    'message' => ['value' => '', 'require' => 'not empty', 'valid' => true],
+    'lot_rate' => ['value' => '', 'require' => 'number', 'valid' => true],
+    'lot_step' => ['value' => '', 'require' => 'number', 'valid' => true],
+    'lot_date' => ['value' => '', 'require' => 'date', 'valid' => true],
+    'img_url' => ['value' => '', 'require' => 'upload', 'valid' => false]
 ];
 
-$lot_name = getFromPost($_POST, 'lot_name');
-$category = getFromPost($_POST, 'category');
-$message = getFromPost($_POST, 'message');
-$lot_rate = getFromPost($_POST, 'lot_rate');
-$lot_step = getFromPost($_POST, 'lot_step');
-$lot_date = getFromPost($_POST, 'lot_date');
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    setFlag($lot_name, '', 'lot_name', $is_invalid);
-    setFlag($category, 'Выберите категорию', 'category', $is_invalid);
-    setFlag($message, '', 'message', $is_invalid);
-    if (!isStringNumber($lot_rate)) {
-        $is_invalid['form'] = true;
-        $is_invalid['lot_rate'] = true;
+    foreach ($add_item_form as $key => $section) {
+        $add_item_form[$key] = addFormToArray($_POST, $key, $section);
+        if (!$add_item_form[$key]['valid'] && $key != 'img_url') {
+            $form_valid = false;
+        }
     }
-    if (!isStringNumber($lot_step)) {
-        $is_invalid['form'] = true;
-        $is_invalid['lot_step'] = true;
-    }
-    if (!checkUserDate($lot_date)) {
-        $is_invalid['form'] = true;
-        $is_invalid['lot_date'] = true;
-    }
-    if (isset($_FILES) && !$is_invalid['form']) {
+    if (!isset($_FILES) || !$form_valid) {
+        $form_valid = false;
+    } elseif (!array_key_exists('userImage', $_FILES)) {
+        $form_valid = false;
+    } elseif ($_FILES['userImage']['name'] != '') {
         $file_name = $_FILES['userImage']['name'];
         $file_path = __DIR__ . '/img/';
-        $img_url = '/img/' . $file_name;
+        $add_item_form['img_url']['value'] = '/img/' . $file_name;
         move_uploaded_file($_FILES['userImage']['tmp_name'], $file_path . $file_name);
-        $is_uploaded = true;
+        $add_item_form['img_url']['valid'] = true;
     } else {
-        $is_invalid['form'] = true;
+        $form_valid = false;
     }
+
 }
 
-if (!$is_uploaded) {
-    $page_content = renderTemplate(
-        'add-lot',
-        [
-            'is_invalid' => $is_invalid,
-            'is_uploaded' => $is_uploaded,
-            'lot_name' => $lot_name,
-            'category' => $category,
-            'message' => $message,
-            'img_url' => $img_url,
-            'lot_rate' => $lot_rate,
-            'lot_step' => $lot_step,
-            'lot_date' => $lot_date
-        ]
-    );
-} else {
+if ($add_item_form['img_url']['valid']) {
     $page_content = renderTemplate(
         'lot',
         [
-            'lot_name' => $lot_name,
-            'img_url' => $img_url,
-            'category' => $category,
-            'message' => $message,
-            'lot_rate' => $lot_rate
+            'lot_name' => $add_item_form['lot_name']['value'],
+            'img_url' => $add_item_form['img_url']['value'],
+            'category' => $add_item_form['category']['value'],
+            'message' => $add_item_form['message']['value'],
+            'lot_rate' => $add_item_form['lot_rate']['value']
         ]
     );
+} else {
+    $page_content = renderTemplate('add-lot', ['add_item_form' => $add_item_form, 'form_valid' => $form_valid]);
 }
 
 echo renderTemplate(
