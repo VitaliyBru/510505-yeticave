@@ -87,7 +87,7 @@ function checkUserDate(string $_str_date)
     return false;
 }
 
-function addFormToArray(&$post, $key, &$section)
+function addFormToArray($post, $key, $section)
 {
     if (array_key_exists($key, $post)) {
         if ($section['require'] == 'not empty') {

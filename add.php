@@ -39,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $form_valid = false;
     }
-
 }
 
 if ($add_item_form['img_url']['valid']) {
