@@ -71,7 +71,7 @@ function tsToTimeOrDate(int $_ts)
 /**
  * A function for checking: is the data correct? (dd.mm.yyyy).
  *
- * @var string $_str_date
+ * @param string $_str_date
  *
  * @return bool
  */
@@ -87,21 +87,27 @@ function checkUserDate(string $_str_date)
     return false;
 }
 
-function addFormToArray($post, $key, $section)
+/**
+ * @param $post
+ * @param $key
+ * @param $section
+ * @return mixed
+ */
+function addFormToArray($key, $section)
 {
-    if (array_key_exists($key, $post)) {
+    if (array_key_exists($key, $_POST)) {
         if ($section['require'] == 'not empty') {
-            if ($post[$key] != '') {
-                $section['value'] = $post[$key];
+            if ($_POST[$key] != '') {
+                $section['value'] = $_POST[$key];
                 $section['valid'] = true;
             } else {
                 $section['valid'] = false;
             }
         }
         if ($section['require'] == 'number') {
-            $number = (int) $post[$key];
-            if ((string) $number == $post[$key] && $post[$key] > 0) {
-                $section['value'] = $post[$key];
+            $number = (int) $_POST[$key];
+            if ((string) $number == $_POST[$key] && $_POST[$key] > 0) {
+                $section['value'] = $_POST[$key];
                 $section['valid'] = true;
             } else {
                 $section['valid'] = false;
@@ -109,8 +115,8 @@ function addFormToArray($post, $key, $section)
             }
         }
         if ($section['require'] == 'date') {
-            if (checkUserDate($post[$key])) {
-                $section['value'] = $post[$key];
+            if (checkUserDate($_POST[$key])) {
+                $section['value'] = strtotime($_POST[$key]);
                 $section['valid'] = true;
             } else {
                 $section['valid'] = false;
@@ -118,8 +124,8 @@ function addFormToArray($post, $key, $section)
             }
         }
         if ($section['require'] == 'choice') {
-            if ($post[$key] != 'Выберите категорию'){
-                $section['value'] = $post[$key];
+            if ($_POST[$key] != 'Выберите категорию'){
+                $section['value'] = $_POST[$key];
                 $section['valid'] = true;
             } else {
                 $section['valid'] = false;
@@ -129,4 +135,40 @@ function addFormToArray($post, $key, $section)
     }
     return $section;
 }
+
+/**
+ * @param $users
+ * @param $user_login
+ * @return mixed
+ */
+function userAuthenticator($users, $user_login)
+{
+    foreach ($users as $user) {
+        if (array_key_exists('email', $user) && $_POST['email'] == $user['email']) {
+            if (array_key_exists('password', $user) && password_verify($_POST['password'], $user[password])) {
+                $user_login['name'] = $user['name'];
+            } else {
+                $user_login['email'] = $_POST['email'];
+                $user_login['form_valid'] = false;
+            }
+        }
+    }
+    if (!$user_login['email'] || !$user_login['name'] ) {
+        $user_login['form_valid'] = false;
+    }
+    return $user_login;
+}
+
+/**
+ * @param int $lot_ts
+ * @return string
+ */
+function timeLeft(int $lot_ts)
+{
+    $now = strtotime('now');
+    $delta_time_h = floor(($lot_ts - $now) / 3600);
+    $delta_time_m = floor(($lot_ts - $now) % 3600 / 60);
+    return sprintf("%02d:%02d", $delta_time_h, $delta_time_m);
+}
+
 ?>

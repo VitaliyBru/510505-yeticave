@@ -2,10 +2,13 @@
 require_once 'functions.php';
 require_once 'lots_list.php';
 
-$is_auth = (bool)rand(0, 1);
-
-$user_name = 'Константин';
-$user_avatar = 'img/user.jpg';
+if (isset($_COOKIE['username'])) {
+    $is_auth = true;
+    $user_name = $_COOKIE['username'];
+    $user_avatar = 'img/user.jpg';
+} else {
+    $is_auth = false;
+}
 
 // устанавливаем часовой пояс в Московское время
 date_default_timezone_set('Europe/Moscow');
@@ -25,8 +28,6 @@ $delta_time_h = floor(($tomorrow - $now) / 3600);
 $delta_time_m = floor(($tomorrow - $now) % 3600 / 60);
 $lot_time_remaining = sprintf("%02d:%02d", $delta_time_h, $delta_time_m);
 
-/** @var array $goods_type the array contains a list of goods type */
-$goods_type = ["Доски и лыжи", "Крепления", "Ботинки", "Одежда", "Инструменты", "Разное"];
 /** @var string $page_content Contains html code */
 $page_content = renderTemplate(
     'index',
