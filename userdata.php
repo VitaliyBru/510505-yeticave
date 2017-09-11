@@ -1,6 +1,7 @@
 <?php
 
 // пользователи для аутентификации
+/** @var array $users */
 $users = [
     [
         'email' => 'ignat.v@gmail.com',

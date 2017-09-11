@@ -71,7 +71,7 @@ function tsToTimeOrDate(int $_ts)
 /**
  * A function for checking: is the data correct? (dd.mm.yyyy).
  *
- * @var string $_str_date
+ * @param string $_str_date
  *
  * @return bool
  */
@@ -87,6 +87,12 @@ function checkUserDate(string $_str_date)
     return false;
 }
 
+/**
+ * @param $post
+ * @param $key
+ * @param $section
+ * @return mixed
+ */
 function addFormToArray($post, $key, $section)
 {
     if (array_key_exists($key, $post)) {
@@ -110,7 +116,7 @@ function addFormToArray($post, $key, $section)
         }
         if ($section['require'] == 'date') {
             if (checkUserDate($post[$key])) {
-                $section['value'] = $post[$key];
+                $section['value'] = strtotime($post[$key]);
                 $section['valid'] = true;
             } else {
                 $section['valid'] = false;
@@ -129,4 +135,41 @@ function addFormToArray($post, $key, $section)
     }
     return $section;
 }
+
+/**
+ * @param $post
+ * @param $users
+ * @param $user_login
+ * @return mixed
+ */
+function userAuthenticator($post, $users, $user_login)
+{
+    foreach ($users as $user) {
+        if (array_key_exists('email', $user) && $post['email'] == $user['email']) {
+            if (array_key_exists('password', $user) && password_verify($post['password'], $user[password])) {
+                $user_login['name'] = $user['name'];
+            } else {
+                $user_login['email'] = $post['email'];
+                $user_login['form_valid'] = false;
+            }
+        }
+    }
+    if (!$user_login['email'] || !$user_login['name'] ) {
+        $user_login['form_valid'] = false;
+    }
+    return $user_login;
+}
+
+/**
+ * @param int $lot_ts
+ * @return string
+ */
+function timeLeft(int $lot_ts)
+{
+    $now = strtotime('now');
+    $delta_time_h = floor(($lot_ts - $now) / 3600);
+    $delta_time_m = floor(($lot_ts - $now) % 3600 / 60);
+    return sprintf("%02d:%02d", $delta_time_h, $delta_time_m);
+}
+
 ?>

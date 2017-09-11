@@ -1,9 +1,17 @@
 <?php
 require_once 'functions.php';
-$is_auth = (bool)rand(0, 1);
+require_once 'lots_list.php';
 
-$user_name = 'Константин';
-$user_avatar = 'img/user.jpg';
+session_start();
+if (isset($_SESSION['username'])) {
+    $is_auth = true;
+    $user_name = $_SESSION['username'];
+    $user_avatar = 'img/user.jpg';
+} else {
+    http_response_code(403);
+    echo 'ошибка 403';
+    exit();
+}
 
 // устанавливаем часовой пояс в Московское время
 date_default_timezone_set('Europe/Moscow');
@@ -26,11 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $form_valid = false;
         }
     }
-    if (!isset($_FILES) || !$form_valid) {
-        $form_valid = false;
-    } elseif (!array_key_exists('userImage', $_FILES)) {
-        $form_valid = false;
-    } elseif ($_FILES['userImage']['name'] != '') {
+    if ($form_valid && isset($_FILES) && array_key_exists('userImage', $_FILES) && $_FILES['userImage']['name'] != '') {
         $file_name = $_FILES['userImage']['name'];
         $file_path = __DIR__ . '/img/';
         $add_item_form['img_url']['value'] = '/img/' . $file_name;
@@ -42,18 +46,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 if ($add_item_form['img_url']['valid']) {
+    $lot_id = count($lots_list);
+    foreach ($add_item_form as $key => $section) {
+        $lots_list[$lot_id][$key] = $section['value'];
+    }
     $page_content = renderTemplate(
         'lot',
         [
-            'lot_name' => $add_item_form['lot_name']['value'],
-            'img_url' => $add_item_form['img_url']['value'],
-            'category' => $add_item_form['category']['value'],
-            'message' => $add_item_form['message']['value'],
-            'lot_rate' => $add_item_form['lot_rate']['value']
+            'bets' => $bets,
+            'lot_id' => $lot_id,
+            'lots_list' => $lots_list,
+            'is_auth' => $is_auth
         ]
     );
 } else {
-    $page_content = renderTemplate('add-lot', ['add_item_form' => $add_item_form, 'form_valid' => $form_valid]);
+    $page_content = renderTemplate(
+        'add',
+        [
+            'add_item_form' => $add_item_form,
+            'form_valid' => $form_valid,
+            'goods_type' => $goods_type
+        ]
+    );
 }
 
 echo renderTemplate(
