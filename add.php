@@ -2,9 +2,10 @@
 require_once 'functions.php';
 require_once 'lots_list.php';
 
-if (isset($_COOKIE['username'])) {
+session_start();
+if (isset($_SESSION['username'])) {
     $is_auth = true;
-    $user_name = $_COOKIE['username'];
+    $user_name = $_SESSION['username'];
     $user_avatar = 'img/user.jpg';
 } else {
     http_response_code(403);
@@ -28,7 +29,7 @@ $add_item_form = [
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     foreach ($add_item_form as $key => $section) {
-        $add_item_form[$key] = addFormToArray($key, $section);
+        $add_item_form[$key] = addFormToArray($_POST, $key, $section);
         if (!$add_item_form[$key]['valid'] && $key != 'img_url') {
             $form_valid = false;
         }

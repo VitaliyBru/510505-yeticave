@@ -93,21 +93,21 @@ function checkUserDate(string $_str_date)
  * @param $section
  * @return mixed
  */
-function addFormToArray($key, $section)
+function addFormToArray($post, $key, $section)
 {
-    if (array_key_exists($key, $_POST)) {
+    if (array_key_exists($key, $post)) {
         if ($section['require'] == 'not empty') {
-            if ($_POST[$key] != '') {
-                $section['value'] = $_POST[$key];
+            if ($post[$key] != '') {
+                $section['value'] = $post[$key];
                 $section['valid'] = true;
             } else {
                 $section['valid'] = false;
             }
         }
         if ($section['require'] == 'number') {
-            $number = (int) $_POST[$key];
-            if ((string) $number == $_POST[$key] && $_POST[$key] > 0) {
-                $section['value'] = $_POST[$key];
+            $number = (int) $post[$key];
+            if ((string) $number == $post[$key] && $post[$key] > 0) {
+                $section['value'] = $post[$key];
                 $section['valid'] = true;
             } else {
                 $section['valid'] = false;
@@ -115,8 +115,8 @@ function addFormToArray($key, $section)
             }
         }
         if ($section['require'] == 'date') {
-            if (checkUserDate($_POST[$key])) {
-                $section['value'] = strtotime($_POST[$key]);
+            if (checkUserDate($post[$key])) {
+                $section['value'] = strtotime($post[$key]);
                 $section['valid'] = true;
             } else {
                 $section['valid'] = false;
@@ -124,8 +124,8 @@ function addFormToArray($key, $section)
             }
         }
         if ($section['require'] == 'choice') {
-            if ($_POST[$key] != 'Выберите категорию'){
-                $section['value'] = $_POST[$key];
+            if ($post[$key] != 'Выберите категорию'){
+                $section['value'] = $post[$key];
                 $section['valid'] = true;
             } else {
                 $section['valid'] = false;
@@ -137,18 +137,19 @@ function addFormToArray($key, $section)
 }
 
 /**
+ * @param $post
  * @param $users
  * @param $user_login
  * @return mixed
  */
-function userAuthenticator($users, $user_login)
+function userAuthenticator($post, $users, $user_login)
 {
     foreach ($users as $user) {
-        if (array_key_exists('email', $user) && $_POST['email'] == $user['email']) {
-            if (array_key_exists('password', $user) && password_verify($_POST['password'], $user[password])) {
+        if (array_key_exists('email', $user) && $post['email'] == $user['email']) {
+            if (array_key_exists('password', $user) && password_verify($post['password'], $user[password])) {
                 $user_login['name'] = $user['name'];
             } else {
-                $user_login['email'] = $_POST['email'];
+                $user_login['email'] = $post['email'];
                 $user_login['form_valid'] = false;
             }
         }

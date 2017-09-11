@@ -6,9 +6,10 @@ define('SECONDS_IN_DAY', '86400');
 
 date_default_timezone_set('Europe/Moscow');
 
-if (isset($_COOKIE['username'])) {
+session_start();
+if (isset($_SESSION['username'])) {
     $is_auth = true;
-    $user_name = $_COOKIE['username'];
+    $user_name = $_SESSION['username'];
     $user_avatar = 'img/user.jpg';
 } else {
     $is_auth = false;
