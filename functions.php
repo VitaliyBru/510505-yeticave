@@ -146,7 +146,7 @@ function userAuthenticator($post, $users, $user_login)
 {
     foreach ($users as $user) {
         if (array_key_exists('email', $user) && $post['email'] == $user['email']) {
-            if (array_key_exists('password', $user) && password_verify($post['password'], $user[password])) {
+            if (array_key_exists('password', $user) && password_verify($post['password'], $user['password'])) {
                 $user_login['name'] = $user['name'];
             } else {
                 $user_login['email'] = $post['email'];
