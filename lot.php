@@ -25,16 +25,46 @@ if (!array_key_exists($lot_id, $lots_list)){
 
 // ставки пользователей, которыми надо заполнить таблицу
 $bets = [
-    ['name' => 'Иван', 'price' => 11500, 'ts' => strtotime('-' . rand(1, 50) . ' minute')],
-    ['name' => 'Константин', 'price' => 11000, 'ts' => strtotime('-' . rand(1, 18) . ' hour')],
+    ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')],
     ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime('-' . rand(25, 50) . ' hour')],
-    ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
+    ['name' => 'Константин', 'price' => 11000, 'ts' => strtotime('-' . rand(1, 18) . ' hour')],
+    ['name' => 'Иван', 'price' => 11500, 'ts' => strtotime('-' . rand(1, 50) . ' minute')],
 ];
+
+
+/** @var array $my_bets */
+$my_bets = [];
+if (isset($_COOKIE['my_bets'])) {
+    $my_bets = json_decode($_COOKIE['my_bets'], true);
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('cost', $_POST)) {
+    $my_bets[$lot_id] = [
+        'name' => $user_name,
+        'price' => $_POST['cost'],
+        'ts' => strtotime('now')
+    ];
+    $json_bets = json_encode($my_bets);
+    $bet_done = true;
+    header('location: /mylots.php');
+    setcookie('my_bets', $json_bets, time() + 1800);
+    exit();
+}
+
+/** @var bool $bet_done True if the bet is done */
+$bet_done = false;
+if (array_key_exists($lot_id, $my_bets)) {
+    $new_bet_id = count($bets);
+    $bets[$new_bet_id] = ['name' => $my_bets[$lot_id]['name'], 'price' => $my_bets[$lot_id]['price'], 'ts' => $my_bets[$lot_id]['ts']];
+    $bet_done = true;
+}
+$bets = array_reverse($bets, true);
 
 $page_content = renderTemplate(
         'lot',
         [
-                'bets' => $bets,
+            'bet_done' => $bet_done,
+            'bets' => $bets,
             'lot_id' => $lot_id,
             'lots_list' => $lots_list,
             'is_auth' => $is_auth

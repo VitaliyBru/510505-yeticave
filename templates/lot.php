@@ -31,7 +31,7 @@
             <p class="lot-item__description"><?=htmlspecialchars($lots_list[$lot_id]['message']) ; ?></p>
         </div>
         <div class="lot-item__right">
-            <div class="lot-item__state" <?= $is_auth ? '' : 'style = "visibility : hidden"' ; ?>>
+            <div class="lot-item__state" <?= ($is_auth && !$bet_done) ? '' : 'style = "visibility : hidden"' ; ?>>
                 <div class="lot-item__timer timer">
                     <?= timeLeft($lots_list[$lot_id]['lot_date']); ?>
                 </div>
@@ -41,13 +41,13 @@
                         <span class="lot-item__cost"><?=$lots_list[$lot_id]['lot_rate']; ?></span>
                     </div>
                     <div class="lot-item__min-cost">
-                        Мин. ставка <span><?=($lots_list[$lot_id]['lot_rate'] + $lots_list[$lot_id]['lot_step']); ?></span>
+                        Мин. ставка <span><?=$lots_list[$lot_id]['lot_rate']; ?></span>
                     </div>
                 </div>
-                <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post">
+                <form class="lot-item__form" action="lot.php?lot_id=<?= $lot_id; ?>" method="post">
                     <p class="lot-item__form-item">
                         <label for="cost">Ваша ставка</label>
-                        <input id="cost" type="number" name="cost" placeholder="<?=($lots_list[$lot_id]['lot_rate'] + $lots_list[$lot_id]['lot_step']); ?>">
+                        <input id="cost" type="number" min="<?=$lots_list[$lot_id]['lot_rate']; ?>" step="<?=$lots_list[$lot_id]['lot_step']; ?>" name="cost" value="<?=$lots_list[$lot_id]['lot_rate']; ?>">
                     </p>
                     <button type="submit" class="button">Сделать ставку</button>
                 </form>

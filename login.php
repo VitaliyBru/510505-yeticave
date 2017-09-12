@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 if ($user_login['name']) {
     session_start();
     $_SESSION['username'] = $user_login['name'];
-    header('location: http://' . $_SERVER['HTTP_HOST'] . '/index.php');
+    header('location: /index.php');
     exit();
 } else {
     $page_content = renderTemplate('login', ['user_login' => $user_login]);

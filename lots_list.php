@@ -64,6 +64,6 @@ $lots_list = [
 ];
 
 $bets = [
-    ['name' => '', 'price' => '', 'ts' => null]
+    ['name' => '', 'price' => '', 'ts' => null, 'lot_id' => null]
 ];
 ?>

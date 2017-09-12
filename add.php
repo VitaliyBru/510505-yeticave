@@ -55,6 +55,7 @@ if ($add_item_form['img_url']['valid']) {
         [
             'bets' => $bets,
             'lot_id' => $lot_id,
+            'bet_done' => true,
             'lots_list' => $lots_list,
             'is_auth' => $is_auth
         ]
