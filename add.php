@@ -2,6 +2,12 @@
 require_once 'functions.php';
 require_once 'lots_list.php';
 
+/** @var bool $is_auth is true if user are authorized */
+$is_auth = false;
+/** @var string $user_name */
+$user_name = null;
+/** @var string $user_avatar contains a path to user avatar image */
+$user_avatar = null;
 session_start();
 if (isset($_SESSION['username'])) {
     $is_auth = true;
@@ -55,6 +61,7 @@ if ($add_item_form['img_url']['valid']) {
         [
             'bets' => $bets,
             'lot_id' => $lot_id,
+            'bet_done' => true,
             'lots_list' => $lots_list,
             'is_auth' => $is_auth
         ]

@@ -7,5 +7,5 @@
  */
 session_start();
 $_SESSION = [];
-header('location: http://' . $_SERVER['HTTP_HOST'] . '/index.php');
+header('location: /index.php');
 exit();

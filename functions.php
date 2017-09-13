@@ -55,7 +55,7 @@ function tsToTimeOrDate(int $_ts)
     $first_number = (int)$interval[0];
     /** @var int $last_number contains second number of $interval */
     $last_number = (int)$interval[1];
-    if ($last_number > 4 || $first_number == 1 || $last_number == 0) {
+    if ($last_number > 4 || $first_number == 1 || ($last_number == 0 && $first_number != 0)) {
         $secondKey = 3;
     } elseif ($last_number > 1 && $last_number < 5) {
         $secondKey = 2;
@@ -146,7 +146,7 @@ function userAuthenticator($post, $users, $user_login)
 {
     foreach ($users as $user) {
         if (array_key_exists('email', $user) && $post['email'] == $user['email']) {
-            if (array_key_exists('password', $user) && password_verify($post['password'], $user[password])) {
+            if (array_key_exists('password', $user) && password_verify($post['password'], $user['password'])) {
                 $user_login['name'] = $user['name'];
             } else {
                 $user_login['email'] = $post['email'];
