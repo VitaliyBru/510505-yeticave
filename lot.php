@@ -44,7 +44,7 @@ if (isset($_COOKIE['my_bets'])) {
     $my_bets = json_decode($_COOKIE['my_bets'], true);
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('cost', $_POST)) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('cost', $_POST) && !array_key_exists($lot_id, $my_bets)) {
     $my_bets[$lot_id] = [
         'name' => $user_name,
         'price' => $_POST['cost'],
