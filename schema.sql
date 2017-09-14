@@ -1,7 +1,23 @@
-CREATE DATABASE  `yeticave`;
+CREATE DATABASE IF NOT EXISTS `yeticave`;
 USE `yeticave`;
 
-CREATE TABLE `lot` (
+CREATE TABLE IF NOT EXISTS `category` (
+	`id` TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`name` CHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `user` (
+	`id` INT(7) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`registration_date` DATE NOT NULL,
+	`email` CHAR(128) NOT NULL,
+	`name` CHAR(128) NOT NULL,
+	`password` CHAR(128) NOT NULL,
+	`avatar` CHAR(50) NULL DEFAULT NULL,
+	`contacts` VARCHAR(512) NOT NULL,
+	UNIQUE INDEX `email` (`email`)
+);
+
+CREATE TABLE IF NOT EXISTS `lot` (
 	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`date_of_creation` DATE NULL DEFAULT NULL,
 	`name` CHAR(255) NULL DEFAULT NULL,
@@ -13,41 +29,19 @@ CREATE TABLE `lot` (
 	`fav_count` INT(10) UNSIGNED NULL DEFAULT NULL,
 	`author` INT(7) UNSIGNED NULL DEFAULT NULL,
 	`winner` INT(7) UNSIGNED NULL DEFAULT NULL,
-	`category_id` TINYINT(1) UNSIGNED NULL DEFAULT NULL
+	`category_id` TINYINT(1) UNSIGNED NULL DEFAULT NULL,
+	INDEX `name` (`name`),
+	CONSTRAINT `FK_lot_category` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`),
+	CONSTRAINT `FK_lot_user` FOREIGN KEY (`author`) REFERENCES `user` (`id`),
+	CONSTRAINT `FK_lot_user_w` FOREIGN KEY (`winner`) REFERENCES `user` (`id`)
 );
 
-CREATE TABLE `category` (
-	`id` TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	`name` CHAR(50) NOT NULL
-);
-
-CREATE TABLE `user` (
-	`id` INT(7) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	`registration_date` DATE NOT NULL,
-	`email` CHAR(128) NOT NULL,
-	`name` CHAR(128) NOT NULL,
-	`password` CHAR(128) NOT NULL,
-	`avatar` CHAR(50) NULL DEFAULT NULL,
-	`contacts` VARCHAR(512) NOT NULL
-);
-
-CREATE TABLE `bet` (
+CREATE TABLE IF NOT EXISTS `bet` (
 	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`date` INT(10) UNSIGNED NOT NULL,
 	`price` INT(10) UNSIGNED NOT NULL,
 	`lot_id` INT(10) UNSIGNED NOT NULL,
-	`user_id` INT(7) UNSIGNED NOT NULL
+	`user_id` INT(7) UNSIGNED NOT NULL,
+	CONSTRAINT `FK_bet_lot` FOREIGN KEY	(`lot_id`) REFERENCES `lot` (`id`),
+	CONSTRAINT `FK_bet_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 );
-
-ALTER TABLE `lot`
-    ADD INDEX `name` (`name`),
-    ADD CONSTRAINT `FK_lot_category` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`),
-    ADD CONSTRAINT `FK_lot_user` FOREIGN KEY (`author`) REFERENCES `user` (`id`),
-    ADD CONSTRAINT `FK_lot_user_w` FOREIGN KEY (`winner`) REFERENCES `user` (`id`);
-
-ALTER TABLE `bet` 
-    ADD CONSTRAINT `FK_bet_lot` FOREIGN KEY	(`lot_id`) REFERENCES `lot` (`id`),
-    ADD CONSTRAINT `FK_bet_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
-
-ALTER TABLE `user`
-    ADD UNIQUE INDEX `email` (`email`);
