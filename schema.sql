@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS `yeticave`;
 USE `yeticave`;
 
-CREATE TABLE IF NOT EXISTS `categoris` (
+CREATE TABLE IF NOT EXISTS `categories` (
 	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`name` VARCHAR(254) NOT NULL
 );
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 	`registration_date` DATETIME NULL,
 	`email` VARCHAR(254) NOT NULL,
 	`name` VARCHAR(254) NOT NULL,
-	`pass_word` VARCHAR(254) NOT NULL,
+	`password` VARCHAR(254) NOT NULL,
 	`avatar` TEXT,
 	`contacts` TEXT,
 	UNIQUE INDEX `email` (`email`)
@@ -26,12 +26,12 @@ CREATE TABLE IF NOT EXISTS `lots` (
 	`price_start` INT(10) UNSIGNED NOT NULL,
 	`date_end` DATETIME NOT NULL,
 	`price_incriment` INT(10) UNSIGNED NOT NULL,
-	`favorit_count` INT(10) UNSIGNED NULL DEFAULT NULL,
+	`favorite_count` INT(10) UNSIGNED NULL DEFAULT NULL,
 	`author` INT(10) UNSIGNED NOT NULL,
 	`winner` INT(10) UNSIGNED NULL DEFAULT NULL,
 	`category_id` INT(10) UNSIGNED NOT NULL,
 	INDEX `name` (`name`),
-	CONSTRAINT `FK_lot_category` FOREIGN KEY (`category_id`) REFERENCES `categoris` (`id`),
+	CONSTRAINT `FK_lot_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`),
 	CONSTRAINT `FK_lot_user` FOREIGN KEY (`author`) REFERENCES `users` (`id`),
 	CONSTRAINT `FK_lot_user_w` FOREIGN KEY (`winner`) REFERENCES `users` (`id`)
 );
