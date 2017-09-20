@@ -1,8 +1,10 @@
 <?php
 require_once 'functions.php';
+require_once 'mysql_helper.php';
+require_once 'init.php';
 require_once 'lots_list.php';
 
-/** @var bool $is_auth is true if user are authorized */
+/** @var bool $is_auth is true if user is authorized */
 $is_auth = false;
 /** @var string $user_name */
 $user_name = null;

@@ -1,5 +1,7 @@
 <?php
 require_once 'functions.php';
+require_once 'mysql_helper.php';
+require_once 'init.php';
 require_once 'lots_list.php';
 
 define('SECONDS_IN_DAY', '86400');
@@ -86,5 +88,3 @@ echo renderTemplate(
         'title' => htmlspecialchars($lots_list[$lot_id]['lot_name'])
     ]
 );
-
-?>
