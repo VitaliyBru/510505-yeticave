@@ -37,7 +37,7 @@ $page_content = renderTemplate(
     'mylots',
     [
         'my_bets' => $my_bets,
-        'lots_list' => $lots_list
+        'lots' => $lots
     ]
 );
 echo renderTemplate(

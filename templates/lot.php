@@ -21,33 +21,33 @@
     </ul>
 </nav>
 <section class="lot-item container">
-    <h2><?=htmlspecialchars($lots_list[$lot_id]['lot_name']); ?></h2>
+    <h2><?=htmlspecialchars($lots[$lot_id]['name']); ?></h2>
     <div class="lot-item__content">
         <div class="lot-item__left">
             <div class="lot-item__image">
-                <img src="<?=$lots_list[$lot_id]['img_url']; ?>" width="730" height="548" alt="Сноуборд">
+                <img src="<?=$lots[$lot_id]['img_url']; ?>" width="730" height="548" alt="Сноуборд">
             </div>
-            <p class="lot-item__category">Категория: <span><?=htmlspecialchars($lots_list[$lot_id]['category']); ?></span></p>
-            <p class="lot-item__description"><?=htmlspecialchars($lots_list[$lot_id]['message']) ; ?></p>
+            <p class="lot-item__category">Категория: <span><?=htmlspecialchars($lots[$lot_id]['category']); ?></span></p>
+            <p class="lot-item__description"><?=htmlspecialchars($lots[$lot_id]['description']) ; ?></p>
         </div>
         <div class="lot-item__right">
             <div class="lot-item__state" <?= ($is_auth && !$bet_done) ? '' : 'style = "visibility : hidden"' ; ?>>
                 <div class="lot-item__timer timer">
-                    <?= timeLeft($lots_list[$lot_id]['lot_date']); ?>
+                    <?= timeLeft($lots[$lot_id]['date_end']); ?>
                 </div>
                 <div class="lot-item__cost-state">
                     <div class="lot-item__rate">
                         <span class="lot-item__amount">Текущая цена</span>
-                        <span class="lot-item__cost"><?=$lots_list[$lot_id]['lot_rate']; ?></span>
+                        <span class="lot-item__cost"><?=$lots[$lot_id]['price_start']; ?></span>
                     </div>
                     <div class="lot-item__min-cost">
-                        Мин. ставка <span><?=$lots_list[$lot_id]['lot_rate']; ?></span>
+                        Мин. ставка <span><?= ($bets[0]['price'] + $lots[$lot_id]['price_step']); ?></span>
                     </div>
                 </div>
                 <form class="lot-item__form" action="lot.php?lot_id=<?= $lot_id; ?>" method="post">
                     <p class="lot-item__form-item">
                         <label for="cost">Ваша ставка</label>
-                        <input id="cost" type="number" min="<?=$lots_list[$lot_id]['lot_rate']; ?>" step="<?=$lots_list[$lot_id]['lot_step']; ?>" name="cost" value="<?=$lots_list[$lot_id]['lot_rate']; ?>">
+                        <input id="cost" type="number" min="<?=$lots[$lot_id]['price_start']; ?>" step="<?=$lots[$lot_id]['price_step']; ?>" name="cost" value="<?=$bets[0]['price']; ?>">
                     </p>
                     <button type="submit" class="button">Сделать ставку</button>
                 </form>

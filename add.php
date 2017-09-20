@@ -24,47 +24,34 @@ if (isset($_SESSION['username'])) {
 // устанавливаем часовой пояс в Московское время
 date_default_timezone_set('Europe/Moscow');
 
-$form_valid = true;
-$add_item_form = [
-    'lot_name' => ['value' => '', 'require' => 'not empty', 'valid' => true],
-    'category' => ['value' => '', 'require' => 'choice', 'valid' => true],
-    'message' => ['value' => '', 'require' => 'not empty', 'valid' => true],
-    'lot_rate' => ['value' => '', 'require' => 'number', 'valid' => true],
-    'lot_step' => ['value' => '', 'require' => 'number', 'valid' => true],
-    'lot_date' => ['value' => '', 'require' => 'date', 'valid' => true],
-    'img_url' => ['value' => '', 'require' => 'upload', 'valid' => false]
-];
+$first_visit = true;
+$add_lot = ['name' => '', 'category' => '', 'description' => '', 'price_start' => '', 'price_step' => '', 'date_end' => '', 'img_url' => '', 'errors' => 0];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    foreach ($add_item_form as $key => $section) {
-        $add_item_form[$key] = addFormToArray($_POST, $key, $section);
-        if (!$add_item_form[$key]['valid'] && $key != 'img_url') {
-            $form_valid = false;
+    $first_visit = false;
+    $add_lot = getDataAddLotForm($_POST, $categories);
+    if (isset($_FILES) && array_key_exists('userImage', $_FILES) && $_FILES['userImage']['name'] != '') {
+        $add_lot['img_url'] = getFileAddLotForm($_FILES);
+        if ($add_lot['img_url'] != '') {
+            $add_lot['errors']--;
         }
-    }
-    if ($form_valid && isset($_FILES) && array_key_exists('userImage', $_FILES) && $_FILES['userImage']['name'] != '') {
-        $file_name = $_FILES['userImage']['name'];
-        $file_path = __DIR__ . '/img/';
-        $add_item_form['img_url']['value'] = '/img/' . $file_name;
-        move_uploaded_file($_FILES['userImage']['tmp_name'], $file_path . $file_name);
-        $add_item_form['img_url']['valid'] = true;
-    } else {
-        $form_valid = false;
     }
 }
 
-if ($add_item_form['img_url']['valid']) {
-    $lot_id = count($lots_list);
-    foreach ($add_item_form as $key => $section) {
-        $lots_list[$lot_id][$key] = $section['value'];
+if ( !$add_lot['errors'] && !$first_visit) {
+    $new_lot_id = count($lots);
+    foreach ($add_lot as $key => $value) {
+        if ($key != 'errors') {
+            $lots[$new_lot_id][$key] = $value;
+        }
     }
     $page_content = renderTemplate(
         'lot',
         [
             'bets' => $bets,
-            'lot_id' => $lot_id,
+            'lot_id' => $new_lot_id,
             'bet_done' => true,
-            'lots_list' => $lots_list,
+            'lots' => $lots,
             'is_auth' => $is_auth
         ]
     );
@@ -72,9 +59,8 @@ if ($add_item_form['img_url']['valid']) {
     $page_content = renderTemplate(
         'add',
         [
-            'add_item_form' => $add_item_form,
-            'form_valid' => $form_valid,
-            'goods_type' => $goods_type
+            'add_lot' => $add_lot,
+            'categories' => $categories
         ]
     );
 }

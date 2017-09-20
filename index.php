@@ -39,8 +39,8 @@ $lot_time_remaining = sprintf("%02d:%02d", $delta_time_h, $delta_time_m);
 $page_content = renderTemplate(
     'index',
     [
-        'goods_type' => $goods_type,
-        'lots_list' => $lots_list,
+        'categories' => $goods_type,
+        'lots' => $lots,
         'lot_time_remaining' => $lot_time_remaining
     ]
 );
