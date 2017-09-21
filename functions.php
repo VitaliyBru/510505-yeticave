@@ -69,7 +69,7 @@ function tsToTimeOrDate(int $_ts)
 }
 
 /**
- * A function for checking: is the data correct? (dd.mm.yyyy).
+ * A function for checking: is the data correct? (yyyy-mm-dd).
  *
  * @param string $_str_date
  *
@@ -77,8 +77,8 @@ function tsToTimeOrDate(int $_ts)
  */
 function checkUserDate(string $_str_date)
 {
-    if (preg_match('#^[0-3](?(?<=3)[01]|\d)\.[01](?(?<=1)[0-2]|\d)\.20[1-3](?(?<=3)[0-4]|\d)$#', $_str_date)) {
-        if (date('d.m.Y', strtotime($_str_date)) == $_str_date) {
+    if (preg_match('#^20[1-3](?(?<=3)[0-4]|\d)-[01](?(?<=1)[0-2]|\d)-[0-3](?(?<=3)[01]|\d)$#', $_str_date)) {
+        if (date('Y-m-d', strtotime($_str_date)) == $_str_date) {
             if (strtotime($_str_date) > strtotime('now')) {
                 return true;
             }
@@ -88,52 +88,67 @@ function checkUserDate(string $_str_date)
 }
 
 /**
- * @param $post
- * @param $key
- * @param $section
+ *  A function extract "add lot form" data from $_POST to array
+ * @param $post contains $_POST
+ * @param $categories contains a list of goods type
  * @return mixed
  */
-function addFormToArray($post, $key, $section)
+function getDataAddLotForm($post, $categories)
 {
-    if (array_key_exists($key, $post)) {
-        if ($section['require'] == 'not empty') {
-            if ($post[$key] != '') {
-                $section['value'] = $post[$key];
-                $section['valid'] = true;
-            } else {
-                $section['valid'] = false;
+    $errors_count = 0;
+    if (array_key_exists('add_lot', $post)) {
+        $add_lot = $post['add_lot'];
+        foreach ($add_lot as $key => $value) {
+            if (($key == 'price_start' || $key == 'price_step') && (int) $value <= 0) {
+                $add_lot[$key] = null;
+                $errors_count++;
             }
-        }
-        if ($section['require'] == 'number') {
-            $number = (int) $post[$key];
-            if ((string) $number == $post[$key] && $post[$key] > 0) {
-                $section['value'] = $post[$key];
-                $section['valid'] = true;
-            } else {
-                $section['valid'] = false;
-                $section['value'] = null;
+            if ($key == 'date_end' && !checkUserDate($value)) {
+                $add_lot[$key] = null;
+                $errors_count++;
             }
-        }
-        if ($section['require'] == 'date') {
-            if (checkUserDate($post[$key])) {
-                $section['value'] = strtotime($post[$key]);
-                $section['valid'] = true;
-            } else {
-                $section['valid'] = false;
-                $section['value'] = '';
+            if ($key == 'category' && !in_array($value, $categories)) {
+                $add_lot[$key] = null;
+                $errors_count++;
             }
-        }
-        if ($section['require'] == 'choice') {
-            if ($post[$key] != 'Выберите категорию'){
-                $section['value'] = $post[$key];
-                $section['valid'] = true;
-            } else {
-                $section['valid'] = false;
-                $section['value'] = '';
+            if (($key == 'name' || $key == 'description' || $key == 'img_url') && $value == '') {
+                $errors_count++;
+            }
+            if ($errors_count) {
+                $add_lot['errors'] = $errors_count;
             }
         }
     }
-    return $section;
+    return $add_lot;
+}
+
+/**
+ * @param $files
+ * @param string $file_path
+ * @return string
+ */
+function getFileAddLotForm($files, $file_path = '/img/')
+{
+    $file_path_full = __DIR__ . $file_path;
+    $file_name = $files['userImage']['name'];
+    if (file_exists($file_path_full . $file_name)) {
+        $file_path_name = $file_path . $file_name;
+    } else {
+        $type_content = mime_content_type($_FILES['userImage']['tmp_name']);
+        if ($type_content != 'image/png' && $type_content != 'image/jpeg') {
+            $file_path_name = '';
+        } else {
+            $file_name = uniqid('img_', true);
+            if ($type_content == 'image/png') {
+                $file_name = $file_name . '.png';
+            }else {
+                $file_name = $file_name . '.jpg';
+            }
+            move_uploaded_file($files['userImage']['tmp_name'], $file_path_full . $file_name);
+            $file_path_name = $file_path . $file_name;
+        }
+    }
+    return $file_path_name;
 }
 
 /**
@@ -171,5 +186,3 @@ function timeLeft(int $lot_ts)
     $delta_time_m = floor(($lot_ts - $now) % 3600 / 60);
     return sprintf("%02d:%02d", $delta_time_h, $delta_time_m);
 }
-
-?>

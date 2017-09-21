@@ -20,74 +20,73 @@
         </li>
     </ul>
 </nav>
-<form class="form form--add-lot container <?= $form_valid ? '' : 'form--invalid'; ?>" action="add.php" method="post"
+<form class="form form--add-lot container <?= !$add_lot['errors'] ? '' : 'form--invalid'; ?>" action="add.php" method="post"
       enctype="multipart/form-data"> <!-- form--invalid -->
     <h2>Добавление лота</h2>
     <div class="form__container-two">
-        <div class="form__item <?= $add_item_form['lot_name']['valid'] ? '' : 'form__item--invalid'; ?>"
+        <div class="form__item <?= (!$add_lot['errors'] || $add_lot['name']) ? '' : 'form__item--invalid'; ?>">
         <!-- form__item--invalid -->
         <label for="lot-name">Наименование</label>
-        <input id="lot-name" type="text" name="lot_name" placeholder="Введите наименование лота"
-               value="<?= htmlspecialchars($add_item_form['lot_name']['value']); ?>" required>
+        <input id="lot-name" type="text" name="add_lot[name]" placeholder="Введите наименование лота"
+               value="<?= htmlspecialchars($add_lot['name']); ?>">
         <span class="form__error">Заполните это поле</span>
+        </div>
+        <div class="form__item <?= (!$add_lot['errors'] || $add_lot['category']) ? '' : 'form__item--invalid'; ?>">
+            <!--.form__item--invalid-->
+            <label for="category">Категория</label>
+            <select id="category" name="add_lot[category]">
+                <option>Выберите категорию</option>
+                <?php foreach ($categories as $category):; ?>
+                    <option <?= ($add_lot['category'] == $category) ? 'selected' : ''; ?>><?= $category; ?></option>
+                <?php endforeach; ?>
+            </select>
+            <span class="form__error">Выберите категорию</span>
+        </div>
     </div>
-    <div class="form__item <?= $add_item_form['category']['valid'] ? '' : 'form__item--invalid'; ?>">
-        <!--.form__item--invalid-->
-        <label for="category">Категория</label>
-        <select id="category" name="category">
-            <option>Выберите категорию</option>
-            <?php foreach ($goods_type as $category):; ?>
-                <option <?= ($add_item_form['category']['value'] == $category) ? 'selected' : ''; ?>><?= $category; ?></option>
-            <?php endforeach; ?>
-        </select>
-        <span class="form__error">Выберите категорию</span>
-    </div>
-    </div>
-    <div class="form__item form__item--wide <?= $add_item_form['message']['valid'] ? '' : 'form__item--invalid'; ?>">
+    <div class="form__item form__item--wide <?= (!$add_lot['errors'] || $add_lot['description']) ? '' : 'form__item--invalid'; ?>">
         <!--form__item--invalid-->
         <label for="message">Описание</label>
-        <textarea id="message" name="message" placeholder="Напишите описание лота"
-                  required><?= htmlspecialchars($add_item_form['message']['value']); ?></textarea>
+        <textarea id="message" name="add_lot[description]" placeholder="Напишите описание лота"><?= htmlspecialchars($add_lot['description']); ?></textarea>
         <span class="form__error">Заполните это поле</span>
     </div>
-    <div class="form__item form__item--file <?= $add_item_form['img_url']['valid'] ? 'form__item--uploaded' : ''; ?>">
+    <div class="form__item form__item--file <?= $add_lot['img_url'] ? 'form__item--uploaded' : ''; ?>">
         <!-- form__item--uploaded -->
         <label>Изображение</label>
         <div class="preview">
             <button class="preview__remove" type="button">x</button>
             <div class="preview__img">
-                <img src="<?= htmlspecialchars($add_item_form['img_url']['value']); ?>" width="113" height="113"
+                <input type="hidden" name="add_lot[img_url]" value="<?= $add_lot['img_url']; ?>">
+                <img src="<?= $add_lot['img_url']; ?>" width="113" height="113"
                      alt="Изображение лота">
             </div>
         </div>
         <div class="form__input-file">
-            <input class="visually-hidden" type="file" id="photo2" name="userImage" value="" required>
+            <input class="visually-hidden" type="file" id="photo2" name="userImage">
             <label for="photo2">
                 <span>+ Добавить</span>
             </label>
         </div>
     </div>
     <div class="form__container-three">
-        <div class="form__item form__item--small <?= $add_item_form['lot_rate']['valid'] ? '' : 'form__item--invalid'; ?>">
+        <div class="form__item form__item--small <?= (!$add_lot['errors'] || $add_lot['price_start']) ? '' : 'form__item--invalid'; ?>">
             <!--.form__item--invalid-->
             <label for="lot-rate">Начальная цена</label>
-            <input id="lot-rate" type="number" name="lot_rate" placeholder="0"
-                   value="<?= $add_item_form['lot_rate']['value']; ?>" required>
+            <input id="lot-rate" type="number" min="1" name="add_lot[price_start]" placeholder="0"
+                   value="<?= $add_lot['price_start']; ?>">
             <span class="form__error">Заполните это поле</span>
         </div>
-        <div class="form__item form__item--small <?= $add_item_form['lot_step']['valid'] ? '' : 'form__item--invalid'; ?>">
+        <div class="form__item form__item--small <?= (!$add_lot['errors'] || $add_lot['price_step']) ? '' : 'form__item--invalid'; ?>">
             <!--.form__item--invalid-->
             <label for="lot-step">Шаг ставки</label>
-            <input id="lot-step" type="number" name="lot_step" placeholder="0"
-                   value="<?= $add_item_form['lot_step']['value']; ?>" required>
+            <input id="lot-step" type="number" min="1" name="add_lot[price_step]" placeholder="0"
+                   value="<?= $add_lot['price_step']; ?>">
             <span class="form__error">Заполните это поле</span>
         </div>
-        <div class="form__item <?= $add_item_form['lot_date']['valid'] ? '' : 'form__item--invalid'; ?>">
+        <div class="form__item <?= (!$add_lot['errors'] || $add_lot['date_end']) ? '' : 'form__item--invalid'; ?>">
             <!--.form__item--invalid-->
             <label for="lot-date">Дата завершения</label>
-            <input class="form__input-date" id="lot_date" type="text" name="lot_date" placeholder="20.05.2017"
-                   value="<?= $add_item_form['lot_date']['value'] ? date('d.m.Y', $add_item_form['lot_date']['value']) : ''; ?>"
-                   required>
+            <input class="form__input-date" id="lot_date" type="date" min="<?= date('Y-m-d', time() + 86400) ; ?>" name="add_lot[date_end]" placeholder="20.05.2017"
+                   value="<?= $add_lot['date_end']; ?>">
             <span class="form__error">Укажите коректную дату</span>
         </div>
     </div>

@@ -1,6 +1,8 @@
 <?php
 require_once 'userdata.php';
 require_once 'functions.php';
+require_once 'mysql_helper.php';
+require_once 'init.php';
 
 date_default_timezone_set('Europe/Moscow');
 $is_auth = false;

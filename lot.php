@@ -1,5 +1,7 @@
 <?php
 require_once 'functions.php';
+require_once 'mysql_helper.php';
+require_once 'init.php';
 require_once 'lots_list.php';
 
 define('SECONDS_IN_DAY', '86400');
@@ -23,7 +25,7 @@ if (isset($_SESSION['username'])) {
 
 /** @var int $lot_id Contains lot identification number */
 $lot_id = $_GET['lot_id'] ?? null;
-if (!array_key_exists($lot_id, $lots_list)){
+if (!array_key_exists($lot_id, $lots)){
     http_response_code(404);
     echo 'ошибка 404';
     exit();
@@ -72,7 +74,7 @@ $page_content = renderTemplate(
             'bet_done' => $bet_done,
             'bets' => $bets,
             'lot_id' => $lot_id,
-            'lots_list' => $lots_list,
+            'lots' => $lots,
             'is_auth' => $is_auth
         ]
 );
@@ -83,8 +85,6 @@ echo renderTemplate(
         'is_auth' => $is_auth,
         'user_name' => $user_name,
         'user_avatar' => $user_avatar,
-        'title' => htmlspecialchars($lots_list[$lot_id]['lot_name'])
+        'title' => htmlspecialchars($lots[$lot_id]['name'])
     ]
 );
-
-?>
