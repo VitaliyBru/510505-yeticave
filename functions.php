@@ -2,7 +2,7 @@
 /**
  * A template engine combine templates with a data to produce result documents.
  *
- * @param string $includeFile Contains name of file teplate (without '.php' exctend).
+ * @param string $includeFile Contains name of file template (without '.php' extend).
  * @param array $data Contains a data for assembling html code.
  *
  * @return string.
@@ -75,22 +75,18 @@ function tsToTimeOrDate(int $_ts)
  *
  * @return bool
  */
-function checkUserDate(string $_str_date)
+function checkUserDate($_str_date)
 {
-    if (preg_match('#^20[1-3](?(?<=3)[0-4]|\d)-[01](?(?<=1)[0-2]|\d)-[0-3](?(?<=3)[01]|\d)$#', $_str_date)) {
-        if (date('Y-m-d', strtotime($_str_date)) == $_str_date) {
-            if (strtotime($_str_date) > strtotime('now')) {
-                return true;
-            }
-        }
-    }
-    return false;
+    $date = DateTime::createFromFormat('Y-m-d', $_str_date);
+    return $date && $date->format('Y-m-d') === $_str_date && strtotime($_str_date) > strtotime('now');
 }
 
 /**
  *  A function extract "add lot form" data from $_POST to array
+ *
  * @param $post contains $_POST
  * @param $categories contains a list of goods type
+ *
  * @return mixed
  */
 function getDataAddLotForm($post, $categories)
@@ -127,7 +123,7 @@ function getDataAddLotForm($post, $categories)
  * @param string $file_path
  * @return string
  */
-function getFileAddLotForm($files, $file_path = '/img/')
+function getImageFilePostForm($files, $file_path = '/img/')
 {
     $file_path_full = __DIR__ . $file_path;
     $file_name = $files['userImage']['name'];
@@ -186,3 +182,116 @@ function timeLeft(int $lot_ts)
     $delta_time_m = floor(($lot_ts - $now) % 3600 / 60);
     return sprintf("%02d:%02d", $delta_time_h, $delta_time_m);
 }
+
+/**
+ * @param $link
+ * @param $sql
+ * @param array $data
+ * @return array
+ */
+function select_data($link, $sql, $data = [])
+{
+    $stmt = db_get_prepare_stmt($link, $sql, $data);
+    $result = [];
+    if (!mysqli_stmt_execute($stmt)) {
+        return $result = [];
+    }
+    $meta = mysqli_stmt_result_metadata($stmt);
+    $row = [];
+    $list = [];
+    while ($field = mysqli_fetch_field($meta)) {
+        $list[] = &$row[$field->name];
+    }
+    $variables = array_merge([$stmt], $list);
+    $bind_result = 'mysqli_stmt_bind_result';
+    $bind_result(...$variables);
+    while (mysqli_stmt_fetch($stmt)) {
+        $temp = [];
+        foreach ($row as $key => $value) {
+            $temp[$key] = $value;
+        }
+        $result[] = $temp;
+    }
+    mysqli_free_result($meta);
+    mysqli_stmt_close($stmt);
+    return $result;
+}
+
+/**
+ * @param $link
+ * @param $table_name
+ * @param array $row_data
+ *
+ * @return bool|int|string
+ */
+function insert_data($link, $table_name, $row_data = array())
+{
+    $sql = "INSERT INTO $table_name(";
+    $placeholder_list = "VALUES (";
+    $data = [];
+    $first_element = true;
+    foreach ($row_data as $column => $value) {
+        $sql .= $first_element ? "$column" : ", $column";
+        $placeholder_list .= $first_element ? "?" : ", ?";
+        $data[] = $value;
+        $first_element = false;
+    }
+    $sql .= ") $placeholder_list)";
+    $stmt = db_get_prepare_stmt($link, $sql, $data);
+    if (!mysqli_stmt_execute($stmt)) {
+        return false;
+    }
+    $insert_id = mysqli_stmt_insert_id($stmt);
+    mysqli_stmt_close($stmt);
+    return $insert_id;
+}
+
+/**
+ * @param $link
+ * @param $sql
+ * @param array $data
+ *
+ * @return bool
+ */
+function exec_query($link, $sql, $data = [])
+{
+    $stmt = db_get_prepare_stmt($link, $sql, $data);
+    if (!mysqli_stmt_execute($stmt)) {
+        return false;
+    }
+    mysqli_stmt_close($stmt);
+    return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

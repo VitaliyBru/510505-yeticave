@@ -31,8 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $first_visit = false;
     $add_lot = getDataAddLotForm($_POST, $categories);
     if (isset($_FILES) && array_key_exists('userImage', $_FILES) && $_FILES['userImage']['name'] != '') {
-        $add_lot['img_url'] = getFileAddLotForm($_FILES);
-        if ($add_lot['img_url'] != '') {
+        if ($add_lot['img_url'] = getImageFilePostForm($_FILES)) {
             $add_lot['errors']--;
         }
     }
