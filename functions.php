@@ -263,35 +263,3 @@ function exec_query($link, $sql, $data = [])
     return true;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
