@@ -25,13 +25,14 @@ function renderTemplate(string $includeFile, $data = array())
  * This function returns a data of the timestamp was created
  * or a time between the timestamp and current time.
  *
- * @param int $_ts receive Unix timestamp format data.
+ * @param string $date receive Unix timestamp format data.
  *
  * @return string
  */
-function tsToTimeOrDate(int $_ts)
+function tsToTimeOrDate(string $date)
 {
-    /** @array $caseSystemRu[$firstKey][$secondKey] contains words with russion case endings */
+    $_ts = strtotime($date);
+    /** @array $caseSystemRu[$firstKey][$secondKey] contains words with russian case endings */
     $caseSystemRu = [
         'hours' => ['Час', ' час', ' часа', ' часов'],
         'minutes' => ['Минуту', ' минуту', ' минуты', ' минут']
@@ -94,28 +95,46 @@ function getDataAddLotForm($post, $categories)
     $errors_count = 0;
     if (array_key_exists('add_lot', $post)) {
         $add_lot = $post['add_lot'];
-        foreach ($add_lot as $key => $value) {
-            if (($key == 'price_start' || $key == 'price_step') && (int) $value <= 0) {
-                $add_lot[$key] = null;
+        foreach ($add_lot[0] as $key => $value) {
+            if (($key == 'price_start' || $key == 'price_increment') && (int) $value <= 0) {
+                $add_lot[0][$key] = null;
                 $errors_count++;
             }
             if ($key == 'date_end' && !checkUserDate($value)) {
-                $add_lot[$key] = null;
+                $add_lot[0][$key] = null;
                 $errors_count++;
             }
-            if ($key == 'category' && !in_array($value, $categories)) {
-                $add_lot[$key] = null;
+            if ($key == 'category' && !in_array($value, array_column($categories, 'name'))) {
+                $add_lot[0][$key] = null;
                 $errors_count++;
             }
-            if (($key == 'name' || $key == 'description' || $key == 'img_url') && $value == '') {
+            if (($key == 'name' || $key == 'description' || $key == 'image') && $value == '') {
                 $errors_count++;
             }
             if ($errors_count) {
-                $add_lot['errors'] = $errors_count;
+                $add_lot[1]['errors'] = $errors_count;
             }
         }
     }
     return $add_lot;
+}
+
+/**
+ * @param $post
+ * @return array
+ */
+function getDataSignInForm($post)
+{
+    $error_count = 0;
+    $sign[0] = $post['sign'];
+    $sign[0]['email'] = filter_var($sign[0]['email'], FILTER_VALIDATE_EMAIL);
+    foreach ($sign[0] as $key => $value) {
+        if ($key != 'avatar' && !$value) {
+            $error_count++;
+        }
+    }
+    $sign['errors'] = $error_count;
+    return $sign;
 }
 
 /**
@@ -171,16 +190,25 @@ function userAuthenticator($post, $users, $user_login)
     return $user_login;
 }
 
-/**
- * @param int $lot_ts
- * @return string
- */
-function timeLeft(int $lot_ts)
+
+function timeLeft(string $lot_time)
 {
+    $lot_time_remaining = null;
+    $ts = strtotime($lot_time);
     $now = strtotime('now');
-    $delta_time_h = floor(($lot_ts - $now) / 3600);
-    $delta_time_m = floor(($lot_ts - $now) % 3600 / 60);
-    return sprintf("%02d:%02d", $delta_time_h, $delta_time_m);
+    $delta_ts = $ts - $now;
+    $days = floor($delta_ts / 86400);
+    if ($days > 3) {
+        return 'Окончание ' . date('d.m.Y в H:i', $ts);
+    }
+    $hour = floor($delta_ts % 86400 / 3600);
+    $minute = floor($delta_ts % 3600 / 60);
+    if ($days) {
+        $lot_time_remaining = "$days д " . sprintf("%02d:%02d", $hour, $minute);
+    } else {
+        $lot_time_remaining = sprintf("%02d:%02d", $hour, $minute);
+    }
+    return $lot_time_remaining;
 }
 
 /**

@@ -11,43 +11,42 @@ $user_name = null;
 /** @var string $user_avatar contains a path to user avatar image */
 $user_avatar = null;
 session_start();
-if (isset($_SESSION['username'])) {
+if (isset($_SESSION['user'])) {
     $is_auth = true;
-    $user_name = $_SESSION['username'];
-    $user_avatar = 'img/user.jpg';
+    $user_name = $_SESSION['user']['name'];
+    $user_id = $_SESSION['user']['id'];
+    $user_avatar = $_SESSION['user']['avatar'];
 }
 
 // устанавливаем часовой пояс в Московское время
 date_default_timezone_set('Europe/Moscow');
 
-// записать в эту переменную оставшееся время в этом формате (ЧЧ:ММ)
-$lot_time_remaining = "00:00";
-
-// временная метка для полночи следующего дня
-$tomorrow = strtotime('tomorrow midnight');
-
-// временная метка для настоящего времени
-$now = strtotime('now');
-
-// далее нужно вычислить оставшееся время до начала следующих суток и записать его в переменную $lot_time_remaining
-// ...
-$delta_time_h = floor(($tomorrow - $now) / 3600);
-$delta_time_m = floor(($tomorrow - $now) % 3600 / 60);
-$lot_time_remaining = sprintf("%02d:%02d", $delta_time_h, $delta_time_m);
+$sql_categories = 'SELECT * FROM categories';
+$categories = select_data($link, $sql_categories);
+$id = (int) ($_GET['id'] ?? null);
+if ($id) {
+    $sql_lot = 'SELECT l.id, l.name, l.image, l.price_start, l.date_end, c.name AS category FROM lots AS l 
+    JOIN categories AS c ON l.category_id=c.id WHERE l.date_end > NOW() AND l.category_id=? ORDER BY l.id DESC';
+    $lots = select_data($link, $sql_lot, [$id]);
+} else {
+    $sql_lot = 'SELECT l.id, l.name, l.image, l.price_start, l.date_end, c.name AS category FROM lots AS l 
+    JOIN categories AS c ON l.category_id=c.id WHERE l.date_end > NOW() ORDER BY l.id DESC';
+    $lots = select_data($link, $sql_lot);
+}
 
 /** @var string $page_content Contains html code */
 $page_content = renderTemplate(
     'index',
     [
-        'categories' => $goods_type,
+        'categories' => $categories,
         'lots' => $lots,
-        'lot_time_remaining' => $lot_time_remaining
     ]
 );
 echo renderTemplate(
     'layout',
     [
         'page_content' => $page_content,
+        'categories' => $categories,
         'is_auth' => $is_auth,
         'user_name' => $user_name,
         'user_avatar' => $user_avatar,

@@ -1,53 +1,41 @@
 <nav class="nav">
     <ul class="nav__list container">
-        <li class="nav__item">
-            <a href="">Доски и лыжи</a>
-        </li>
-        <li class="nav__item">
-            <a href="">Крепления</a>
-        </li>
-        <li class="nav__item">
-            <a href="">Ботинки</a>
-        </li>
-        <li class="nav__item">
-            <a href="">Одежда</a>
-        </li>
-        <li class="nav__item">
-            <a href="">Инструменты</a>
-        </li>
-        <li class="nav__item">
-            <a href="">Разное</a>
-        </li>
+        <?php foreach($categories as $category):?>
+            <li class="nav__item">
+                <a href="index.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
+            </li>
+        <?php endforeach; ?>
     </ul>
 </nav>
 <section class="lot-item container">
-    <h2><?=htmlspecialchars($lots[$lot_id]['name']); ?></h2>
+    <h2><?=htmlspecialchars($lot['name']); ?></h2>
     <div class="lot-item__content">
         <div class="lot-item__left">
             <div class="lot-item__image">
-                <img src="<?=$lots[$lot_id]['img_url']; ?>" width="730" height="548" alt="Сноуборд">
+                <img src="<?=$lot['image']; ?>" width="730" height="548" alt="Сноуборд">
             </div>
-            <p class="lot-item__category">Категория: <span><?=htmlspecialchars($lots[$lot_id]['category']); ?></span></p>
-            <p class="lot-item__description"><?=htmlspecialchars($lots[$lot_id]['description']) ; ?></p>
+            <p class="lot-item__category">Категория: <span><?=$lot['category']; ?></span></p>
+            <p class="lot-item__description"><?=htmlspecialchars($lot['description']) ; ?></p>
         </div>
         <div class="lot-item__right">
-            <div class="lot-item__state" <?= ($is_auth && !$bet_done) ? '' : 'style = "visibility : hidden"' ; ?>>
+            <div class="lot-item__state" <?= !$bet_block_hidden ? '' : 'style = "visibility : hidden"' ; ?>>
                 <div class="lot-item__timer timer">
-                    <?= timeLeft($lots[$lot_id]['date_end']); ?>
+                    <?= timeLeft($lot['date_end']); ?>
                 </div>
                 <div class="lot-item__cost-state">
                     <div class="lot-item__rate">
                         <span class="lot-item__amount">Текущая цена</span>
-                        <span class="lot-item__cost"><?=$lots[$lot_id]['price_start']; ?></span>
+                        <span class="lot-item__cost"><?=$bets[0]['price'] ? $bets[0]['price'] : $lot['price_start']; ?></span>
                     </div>
                     <div class="lot-item__min-cost">
-                        Мин. ставка <span><?= ($bets[0]['price'] + $lots[$lot_id]['price_step']); ?></span>
+                        Мин. ставка <span><?=$bets[0]['price'] ? ($bets[0]['price'] + $lot['price_increment']) : $lot['price_start']; ?></span>
                     </div>
                 </div>
-                <form class="lot-item__form" action="lot.php?lot_id=<?= $lot_id; ?>" method="post">
+                <form class="lot-item__form" action="lot.php?lot_id=<?= $lot[id]; ?>" method="post">
                     <p class="lot-item__form-item">
                         <label for="cost">Ваша ставка</label>
-                        <input id="cost" type="number" min="<?=$lots[$lot_id]['price_start']; ?>" step="<?=$lots[$lot_id]['price_step']; ?>" name="cost" value="<?=$bets[0]['price']; ?>">
+                        <input id="cost" type="number" min="<?=$bets[0]['price'] ? ($bets[0]['price'] + $lot['price_increment']) : $lot['price_start']; ?>"
+                               name="cost" value="<?=$bets[0]['price'] ? ($bets[0]['price'] + $lot['price_increment']) : $lot['price_start']; ?>">
                     </p>
                     <button type="submit" class="button">Сделать ставку</button>
                 </form>
@@ -59,8 +47,8 @@
                     <?php foreach ($bets as $bet): ?>
                         <tr class="history__item">
                             <td class="history__name"><?=$bet['name']; ?></td><!-- имя автора-->
-                            <td class="history__price"><?=$bet['price'] ? $bet['price'] . 'р' : ''; ?></td><!-- цена-->
-                            <td class="history__time"><?=$bet['ts'] ? tsToTimeOrDate($bet['ts']) : ''; ?></td><!-- дата в человеческом формате-->
+                            <td class="history__price"><?=$bet['price'] . 'р'; ?></td><!-- цена-->
+                            <td class="history__time"><?=tsToTimeOrDate($bet['date']); ?></td><!-- дата в человеческом формате-->
                         </tr>
                     <?php endforeach; ?>
                 </table>

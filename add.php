@@ -11,10 +11,11 @@ $user_name = null;
 /** @var string $user_avatar contains a path to user avatar image */
 $user_avatar = null;
 session_start();
-if (isset($_SESSION['username'])) {
+if (isset($_SESSION['user'])) {
     $is_auth = true;
-    $user_name = $_SESSION['username'];
-    $user_avatar = 'img/user.jpg';
+    $user_name = $_SESSION['user']['name'];
+    $user_id = $_SESSION['user']['id'];
+    $user_avatar = $_SESSION['user']['avatar'];
 } else {
     http_response_code(403);
     echo 'ошибка 403';
@@ -24,50 +25,48 @@ if (isset($_SESSION['username'])) {
 // устанавливаем часовой пояс в Московское время
 date_default_timezone_set('Europe/Moscow');
 
+$sql_categories = 'SELECT * FROM categories';
+$categories = select_data($link, $sql_categories);
 $first_visit = true;
-$add_lot = ['name' => '', 'category' => '', 'description' => '', 'price_start' => '', 'price_step' => '', 'date_end' => '', 'img_url' => '', 'errors' => 0];
+$add_lot = [['name' => '', 'category' => '', 'description' => '', 'price_start' => '', 'price_increment' => '', 'date_end' => '', 'image' => ''], ['errors' => 0]];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $first_visit = false;
     $add_lot = getDataAddLotForm($_POST, $categories);
     if (isset($_FILES) && array_key_exists('userImage', $_FILES) && $_FILES['userImage']['name'] != '') {
-        if ($add_lot['img_url'] = getImageFilePostForm($_FILES)) {
-            $add_lot['errors']--;
+        if ($add_lot[0]['image'] = getImageFilePostForm($_FILES)) {
+            $add_lot[1]['errors']--;
+        }
+    }
+    if (!$add_lot[1]['errors']) {
+        $key = in_array($add_lot[0]['category'], array_column($categories, 'name'));
+        $add_lot[0]['category_id'] = $categories[$key]['id'];
+        unset($add_lot[0]['category']);
+        $add_lot[0]['author'] = $user_id;
+        if ($new_lot_id = insert_data($link, 'lots', $add_lot[0])) {
+            header("location: /lot.php?lot_id=$new_lot_id");
+            exit();
+        } else{
+            echo 'Ошибка добавления в БД';
+            exit();
         }
     }
 }
 
-if ( !$add_lot['errors'] && !$first_visit) {
-    $new_lot_id = count($lots);
-    foreach ($add_lot as $key => $value) {
-        if ($key != 'errors') {
-            $lots[$new_lot_id][$key] = $value;
-        }
-    }
-    $page_content = renderTemplate(
-        'lot',
-        [
-            'bets' => $bets,
-            'lot_id' => $new_lot_id,
-            'bet_done' => true,
-            'lots' => $lots,
-            'is_auth' => $is_auth
-        ]
-    );
-} else {
-    $page_content = renderTemplate(
-        'add',
-        [
-            'add_lot' => $add_lot,
-            'categories' => $categories
-        ]
-    );
-}
+$page_content = renderTemplate(
+    'add',
+    [
+        'add_lot' => $add_lot,
+        'categories' => $categories
+    ]
+);
+
 
 echo renderTemplate(
     'layout',
     [
         'page_content' => $page_content,
+        'categories' => $categories,
         'is_auth' => $is_auth,
         'user_name' => $user_name,
         'user_avatar' => $user_avatar,

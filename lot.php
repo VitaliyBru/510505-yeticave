@@ -2,7 +2,6 @@
 require_once 'functions.php';
 require_once 'mysql_helper.php';
 require_once 'init.php';
-require_once 'lots_list.php';
 
 define('SECONDS_IN_DAY', '86400');
 
@@ -14,77 +13,76 @@ $is_auth = false;
 $user_name = null;
 /** @var string $user_avatar contains a path to user avatar image */
 $user_avatar = null;
+/** @var bool $bet_block_hidden if true then the block will be hidden*/
+$bet_block_hidden = true;
 session_start();
-if (isset($_SESSION['username'])) {
+if (isset($_SESSION['user'])) {
     $is_auth = true;
-    $user_name = $_SESSION['username'];
-    $user_avatar = 'img/user.jpg';
-} else {
-    $is_auth = false;
+    $user_name = $_SESSION['user']['name'];
+    $user_id = $_SESSION['user']['id'];
+    $user_avatar = $_SESSION['user']['avatar'];
+    $bet_block_hidden = false;
 }
 
 /** @var int $lot_id Contains lot identification number */
 $lot_id = $_GET['lot_id'] ?? null;
-if (!array_key_exists($lot_id, $lots)){
+$sql_lot = 'SELECT l.id, l.name, l.description, l.image, l.price_start, l.price_increment, l.date_end, l.author, c.name AS category 
+FROM lots AS l JOIN categories AS c ON l.category_id=c.id WHERE l.id=?';
+$lot_bet = select_data($link, $sql_lot, [$lot_id]);
+if (!$lot_bet){
     http_response_code(404);
     echo 'ошибка 404';
     exit();
 }
+$lot = $lot_bet[0];
+if ($lot['author'] == $user_id) {
+    $bet_block_hidden = true;
+}
+$sql_bets = 'SELECT b.price, b.date, u.name  FROM bets AS b LEFT JOIN users AS u ON b.user_id = u.id WHERE b.lot_id=? ORDER BY b.id DESC';
+$bets = select_data($link, $sql_bets, [$lot_id]);
 
-// ставки пользователей, которыми надо заполнить таблицу
-$bets = [
-    ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')],
-    ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime('-' . rand(25, 50) . ' hour')],
-    ['name' => 'Константин', 'price' => 11000, 'ts' => strtotime('-' . rand(1, 18) . ' hour')],
-    ['name' => 'Иван', 'price' => 11500, 'ts' => strtotime('-' . rand(1, 50) . ' minute')],
-];
-
-
-/** @var array $my_bets */
-$my_bets = [];
-if (isset($_COOKIE['my_bets'])) {
-    $my_bets = json_decode($_COOKIE['my_bets'], true);
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('cost', $_POST)) {
+    $bet_min = $bets[0]['price'] ? ($bets[0]['price'] + $lot['price_increment']) : $lot['price_start'];
+    $bet_amount = $_POST['cost'];
+    if ($bet_amount >= $bet_min && (int) $bet_amount == $bet_amount) {
+        $my_bet = [
+            'lot_id' => $lot['id'],
+            'user_id' => $user_id,
+            'price' => $_POST['cost'],
+        ];
+        if (insert_data($link,'bets', $my_bet)) {
+            header('location: /mylots.php');
+            exit();
+        } else {
+            echo 'Ошибка добавления ставки в БД';
+            exit();
+        }
+    } else {
+        echo 'Ставка слишком мала';
+        exit();
+    }
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('cost', $_POST) && !array_key_exists($lot_id, $my_bets)) {
-    $my_bets[$lot_id] = [
-        'name' => $user_name,
-        'price' => $_POST['cost'],
-        'ts' => strtotime('now')
-    ];
-    $json_bets = json_encode($my_bets);
-    $bet_done = true;
-    header('location: /mylots.php');
-    setcookie('my_bets', $json_bets, time() + 1800);
-    exit();
-}
-
-/** @var bool $bet_done True if the bet is done */
-$bet_done = false;
-if (array_key_exists($lot_id, $my_bets)) {
-    $new_bet_id = count($bets);
-    $bets[$new_bet_id] = ['name' => $my_bets[$lot_id]['name'], 'price' => $my_bets[$lot_id]['price'], 'ts' => $my_bets[$lot_id]['ts']];
-    $bet_done = true;
-}
-$bets = array_reverse($bets, true);
+$sql_categories = 'SELECT * FROM categories';
+$categories = select_data($link, $sql_categories);
 
 $page_content = renderTemplate(
         'lot',
         [
-            'bet_done' => $bet_done,
             'bets' => $bets,
-            'lot_id' => $lot_id,
-            'lots' => $lots,
-            'is_auth' => $is_auth
+            'lot' => $lot,
+            'categories' => $categories,
+            'bet_block_hidden' => $bet_block_hidden
         ]
 );
 echo renderTemplate(
     'layout',
     [
+        'categories' => $categories,
         'page_content' => $page_content,
         'is_auth' => $is_auth,
         'user_name' => $user_name,
         'user_avatar' => $user_avatar,
-        'title' => htmlspecialchars($lots[$lot_id]['name'])
+        'title' => htmlspecialchars($lot_bet[$lot_id]['name'])
     ]
 );
