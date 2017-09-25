@@ -291,3 +291,18 @@ function exec_query($link, $sql, $data = [])
     return true;
 }
 
+/**
+ * @param $lots_count
+ * @param $get contains «$_GET»
+ * @param int $lots_limit count of lots on single page
+ *
+ * @return array
+ */
+function paginationCalculator($lots_count, $get, $lots_limit = 3)
+{
+    $current_page = $get['page'] ?? 1;
+    $pages_count = ceil($lots_count / $lots_limit);
+    $offset = ($current_page - 1) * $lots_limit;
+    $pages_list = range(1, $pages_count);
+    return ['count' => $pages_count, 'list' => $pages_list, 'limit' => $lots_limit, 'offset' => $offset, 'current' => $current_page];
+}
