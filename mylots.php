@@ -34,18 +34,20 @@ $my_bets = select_data($link, $sql_my_bets, [$user_id]);
 $sql_categories = 'SELECT * FROM categories';
 $categories = select_data($link, $sql_categories);
 
+$nav_panel = renderTemplate('nav_panel', ['categories' => $categories]);
+/** @var string $page_content Contains html code */
 $page_content = renderTemplate(
     'mylots',
     [
         'my_bets' => $my_bets,
-        'categories' => $categories,
+        'nav_panel' => $nav_panel,
     ]
 );
 echo renderTemplate(
     'layout',
     [
         'page_content' => $page_content,
-        'categories' => $categories,
+        'nav_panel' => $nav_panel,
         'is_auth' => $is_auth,
         'user_name' => $user_name,
         'user_avatar' => $user_avatar,

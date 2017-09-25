@@ -32,12 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('login', $_POST)) {
 $sql_categories = 'SELECT * FROM categories';
 $categories = select_data($link, $sql_categories);
 
-$page_content = renderTemplate('login', ['login' => $login]);
+$nav_panel = renderTemplate('nav_panel', ['categories' => $categories]);
+/** @var string $page_content Contains html code */
+$page_content = renderTemplate('login', ['login' => $login, 'nav_panel' => $nav_panel,]);
 echo renderTemplate(
     'layout',
     [
         'page_content' => $page_content,
-        'categories' => $categories,
+        'nav_panel' => $nav_panel,
         'is_auth' => $is_auth,
         'title' => 'Вход'
     ]

@@ -66,19 +66,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('cost', $_POST)) {
 $sql_categories = 'SELECT * FROM categories';
 $categories = select_data($link, $sql_categories);
 
+$nav_panel = renderTemplate('nav_panel', ['categories' => $categories]);
+/** @var string $page_content Contains html code */
 $page_content = renderTemplate(
         'lot',
         [
             'bets' => $bets,
             'lot' => $lot,
-            'categories' => $categories,
+            'nav_panel' => $nav_panel,
             'bet_block_hidden' => $bet_block_hidden
         ]
 );
 echo renderTemplate(
     'layout',
     [
-        'categories' => $categories,
+        'nav_panel' => $nav_panel,
         'page_content' => $page_content,
         'is_auth' => $is_auth,
         'user_name' => $user_name,

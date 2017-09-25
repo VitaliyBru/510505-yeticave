@@ -1,12 +1,4 @@
-<nav class="nav">
-    <ul class="nav__list container">
-        <?php foreach($categories as $category):?>
-            <li class="nav__item">
-                <a href="index.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-</nav>
+<?=$nav_panel; ?>
 <section class="rates container">
     <h2>Мои ставки</h2>
     <table class="rates__list">

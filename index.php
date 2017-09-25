@@ -40,6 +40,7 @@ WHERE l.date_end > NOW() AND l.category_id=?';
     $lots = select_data($link, $sql_lot, [$pages['limit'], $pages['offset']]);
 }
 
+$nav_panel = renderTemplate('nav_panel', ['categories' => $categories]);
 /** @var string $page_content Contains html code */
 $page_content = renderTemplate('pagination', ['pages' => $pages, 'id' => $id]);
 $page_content = renderTemplate(
@@ -54,7 +55,7 @@ echo renderTemplate(
     'layout',
     [
         'page_content' => $page_content,
-        'categories' => $categories,
+        'nav_panel' => $nav_panel,
         'is_auth' => $is_auth,
         'user_name' => $user_name,
         'user_avatar' => $user_avatar,
