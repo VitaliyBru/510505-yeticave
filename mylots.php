@@ -31,23 +31,20 @@ l.winner, l.category_id FROM (SELECT id, MAX(price) AS price, lot_id, date FROM 
 JOIN lots AS l ON b.lot_id=l.id) AS bl JOIN categories AS c ON bl.category_id=c.id LEFT JOIN users AS u ON bl.winner=u.id 
 ORDER BY bl.id DESC';
 $my_bets = select_data($link, $sql_my_bets, [$user_id]);
-$sql_categories = 'SELECT * FROM categories';
-$categories = select_data($link, $sql_categories);
+$categories = select_data($link, 'SELECT * FROM categories');
 
-$nav_panel = renderTemplate('nav_panel', ['categories' => $categories]);
-/** @var string $page_content Contains html code */
 $page_content = renderTemplate(
     'mylots',
     [
         'my_bets' => $my_bets,
-        'nav_panel' => $nav_panel,
+        'categories' => $categories,
     ]
 );
 echo renderTemplate(
     'layout',
     [
         'page_content' => $page_content,
-        'nav_panel' => $nav_panel,
+        'categories' => $categories,
         'is_auth' => $is_auth,
         'user_name' => $user_name,
         'user_avatar' => $user_avatar,

@@ -20,8 +20,7 @@ if (isset($_SESSION['user'])) {
 // устанавливаем часовой пояс в Московское время
 date_default_timezone_set('Europe/Moscow');
 
-$sql_categories = 'SELECT * FROM categories';
-$categories = select_data($link, $sql_categories);
+$categories = select_data($link, 'SELECT * FROM categories');
 $id = (int) ($_GET['id'] ?? null);
 if ($id) {
     $sql_lots_count = 'SELECT COUNT(l.id) AS lots_count FROM lots AS l JOIN categories AS c ON l.category_id=c.id 
@@ -40,7 +39,6 @@ WHERE l.date_end > NOW() AND l.category_id=?';
     $lots = select_data($link, $sql_lot, [$pages['limit'], $pages['offset']]);
 }
 
-$nav_panel = renderTemplate('nav_panel', ['categories' => $categories]);
 /** @var string $page_content Contains html code */
 $page_content = renderTemplate('pagination', ['pages' => $pages, 'id' => $id]);
 $page_content = renderTemplate(
@@ -55,7 +53,7 @@ echo renderTemplate(
     'layout',
     [
         'page_content' => $page_content,
-        'nav_panel' => $nav_panel,
+        'categories' => $categories,
         'is_auth' => $is_auth,
         'user_name' => $user_name,
         'user_avatar' => $user_avatar,

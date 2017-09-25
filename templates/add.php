@@ -1,4 +1,12 @@
-<?=$nav_panel; ?>
+<nav class="nav">
+    <ul class="nav__list container">
+        <?php foreach($categories as $category):?>
+            <li class="nav__item">
+                <a href="index.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</nav>
 <form class="form form--add-lot container <?= !$add_lot['errors'] ? '' : 'form--invalid'; ?>" action="add.php" method="post"
       enctype="multipart/form-data"> <!-- form--invalid -->
     <h2>Добавление лота</h2>

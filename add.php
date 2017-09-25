@@ -2,6 +2,7 @@
 require_once 'functions.php';
 require_once 'mysql_helper.php';
 require_once 'init.php';
+require_once 'lots_list.php';
 
 /** @var bool $is_auth is true if user are authorized */
 $is_auth = false;
@@ -52,14 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$nav_panel = renderTemplate('nav_panel', ['categories' => $categories]);
-/** @var string $page_content Contains html code */
 $page_content = renderTemplate(
     'add',
     [
         'add_lot' => $add_lot,
-        'nav_panel' => $nav_panel,
-        'categories' => $categories,
+        'categories' => $categories
     ]
 );
 
@@ -68,7 +66,7 @@ echo renderTemplate(
     'layout',
     [
         'page_content' => $page_content,
-        'nav_panel' => $nav_panel,
+        'categories' => $categories,
         'is_auth' => $is_auth,
         'user_name' => $user_name,
         'user_avatar' => $user_avatar,

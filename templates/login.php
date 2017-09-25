@@ -1,4 +1,12 @@
-<?=$nav_panel; ?>
+<nav class="nav">
+    <ul class="nav__list container">
+        <?php foreach($categories as $category):?>
+            <li class="nav__item">
+                <a href="index.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+  </nav>
   <form class="form container <?= ($login['fix_error'] || $login['wrong_data']) ? 'form--invalid' : ''; ?>" action="login.php" method="post"> <!-- form--invalid -->
     <h2>Вход</h2>
       <?=$login['fix_error'] ? '<span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме</span>' : ''; ?>

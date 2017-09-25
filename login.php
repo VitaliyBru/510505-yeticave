@@ -29,17 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('login', $_POST)) {
     }
 }
 
-$sql_categories = 'SELECT * FROM categories';
-$categories = select_data($link, $sql_categories);
-
-$nav_panel = renderTemplate('nav_panel', ['categories' => $categories]);
-/** @var string $page_content Contains html code */
-$page_content = renderTemplate('login', ['login' => $login, 'nav_panel' => $nav_panel,]);
+$categories = select_data($link, 'SELECT * FROM categories');
+$page_content = renderTemplate('login', ['categories' => $categories, 'login' => $login]);
 echo renderTemplate(
     'layout',
     [
         'page_content' => $page_content,
-        'nav_panel' => $nav_panel,
+        'categories' => $categories,
         'is_auth' => $is_auth,
         'title' => 'Вход'
     ]
