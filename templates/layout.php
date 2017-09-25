@@ -52,15 +52,7 @@
 </main>
 
 <footer class="main-footer">
-    <nav class="nav">
-        <ul class="nav__list container">
-            <?php foreach($categories as $category):?>
-            <li class="nav__item">
-                <a href="index.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
-            </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
+    <?=$nav_panel; ?>
     <div class="main-footer__bottom container">
         <div class="main-footer__copyright">
             <p>© 2017, YetiCave</p>

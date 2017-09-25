@@ -30,17 +30,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('sign', $_POST)) {
 $sql_categories = 'SELECT * FROM categories';
 $categories = select_data($link, $sql_categories);
 
+$nav_panel = renderTemplate('nav_panel', ['categories' => $categories]);
+/** @var string $page_content Contains html code */
 $page_content = renderTemplate(
     'sign-in',
     [
         'sign' => $sign,
-        'categories' => $categories
+        'nav_panel' => $nav_panel
     ]
 );
 echo renderTemplate(
     'layout',
     [
-        'categories' => $categories,
+        'nav_panel' => $nav_panel,
         'page_content' => $page_content,
         'is_auth' => $is_auth,
         'user_name' => $user_name,
