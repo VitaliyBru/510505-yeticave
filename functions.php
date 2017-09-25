@@ -166,28 +166,25 @@ function getImageFilePostForm($files, $file_path = '/img/')
     return $file_path_name;
 }
 
-/**
- * @param $post
- * @param $users
- * @param $user_login
- * @return mixed
- */
-function userAuthenticator($post, $users, $user_login)
+function indexDataBuilder($link, $id, $get, $lots_on_page = 3)
 {
-    foreach ($users as $user) {
-        if (array_key_exists('email', $user) && $post['email'] == $user['email']) {
-            if (array_key_exists('password', $user) && password_verify($post['password'], $user['password'])) {
-                $user_login['name'] = $user['name'];
-            } else {
-                $user_login['email'] = $post['email'];
-                $user_login['form_valid'] = false;
-            }
-        }
+    if ($id) {
+        $sql_lots_count = 'SELECT COUNT(l.id) AS lots_count FROM lots AS l JOIN categories AS c ON l.category_id=c.id 
+WHERE l.date_end > NOW() AND l.category_id=?';
+        $lots_count = select_data($link, $sql_lots_count, [$id]);
+        $sql_lot = 'SELECT l.id, l.name, l.image, l.price_start, l.date_end, c.name AS category FROM lots AS l 
+    JOIN categories AS c ON l.category_id=c.id WHERE l.date_end > NOW() AND l.category_id=? ORDER BY l.id DESC LIMIT ? OFFSET ?';
+        $pages = paginationCalculator($lots_count[0]['lots_count'], $get, $lots_on_page);
+        $lots = select_data($link, $sql_lot, [$id, $pages['limit'], $pages['offset']]);
+    } else {
+        $sql_lots_count = 'SELECT COUNT(id) AS lots_count FROM lots WHERE date_end > NOW()';
+        $lots_count = select_data($link, $sql_lots_count);
+        $sql_lot = 'SELECT l.id, l.name, l.image, l.price_start, l.date_end, c.name AS category FROM lots AS l 
+    JOIN categories AS c ON l.category_id=c.id WHERE l.date_end > NOW() ORDER BY l.id DESC LIMIT ? OFFSET ?';
+        $pages = paginationCalculator($lots_count[0]['lots_count'], $get, $lots_on_page);
+        $lots = select_data($link, $sql_lot, [$pages['limit'], $pages['offset']]);
     }
-    if (!$user_login['email'] || !$user_login['name'] ) {
-        $user_login['form_valid'] = false;
-    }
-    return $user_login;
+    return ['pages' => $pages, 'lots' => $lots];
 }
 
 
