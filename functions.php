@@ -320,7 +320,7 @@ function exec_query($link, $sql, $data = [])
 
 /**
  * @param $link
- * @return array
+ * @return array id and category in qne list
  */
 function getCategoriesList($link)
 {
