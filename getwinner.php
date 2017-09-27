@@ -4,7 +4,7 @@ require_once 'functions.php';
 require_once 'mysql_helper.php';
 require_once 'init.php';
 
-$winner_data = [];
+$winners_data = [];
 $sql = 'SELECT id FROM lots WHERE winner IS NULL AND date_end < NOW()';
 $lots_without_winner = select_data($link, $sql);
 $sql = 'SELECT users.id AS user_id, users.name AS user_name, users.email, lots.id AS lot_id, lots.name FROM bets
@@ -31,6 +31,6 @@ $message = (new Swift_Message('Ваша ставка победила'))
 foreach ($winners_data as $winner) {
     $body_content = renderTemplate('email', ['winner' => $winner]);
     $message->setTo([$winner['email']]);
-    $message->setBody($body_content);
+    $message->setBody($body_content, 'text/html');
     $mailer->send($message);
 }
