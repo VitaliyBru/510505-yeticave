@@ -1,4 +1,5 @@
 <?php
+require_once 'vendor/autoload.php';
 require_once 'functions.php';
 require_once 'mysql_helper.php';
 require_once 'init.php';
@@ -24,25 +25,27 @@ if (isset($_SESSION['user'])) {
 // устанавливаем часовой пояс в Московское время
 date_default_timezone_set('Europe/Moscow');
 
-$sql_categories = 'SELECT * FROM categories';
-$categories = select_data($link, $sql_categories);
+$categories = getCategoriesList($link);
 $first_visit = true;
-$add_lot = [['name' => '', 'category' => '', 'description' => '', 'price_start' => '', 'price_increment' => '', 'date_end' => '', 'image' => ''], ['errors' => 0]];
+$add_lot = [
+    'value' => ['name' => '', 'category' => '', 'description' => '', 'price_start' => '', 'price_increment' => '', 'date_end' => '', 'image' => ''],
+    'errors' => 0
+];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $first_visit = false;
     $add_lot = getDataAddLotForm($_POST, $categories);
     if (isset($_FILES) && array_key_exists('userImage', $_FILES) && $_FILES['userImage']['name'] != '') {
-        if ($add_lot[0]['image'] = getImageFilePostForm($_FILES)) {
-            $add_lot[1]['errors']--;
+        if ($add_lot['value']['image'] = getImageFilePostForm($_FILES)) {
+            $add_lot['errors']--;
         }
     }
-    if (!$add_lot[1]['errors']) {
-        $key = in_array($add_lot[0]['category'], array_column($categories, 'name'));
-        $add_lot[0]['category_id'] = $categories[$key]['id'];
-        unset($add_lot[0]['category']);
-        $add_lot[0]['author'] = $user_id;
-        if ($new_lot_id = insert_data($link, 'lots', $add_lot[0])) {
+    if (!$add_lot['errors']) {
+        $key = in_array($add_lot['value']['category'], array_column($categories, 'name'));
+        $add_lot['value']['category_id'] = $categories[$key]['id'];
+        unset($add_lot['value']['category']);
+        $add_lot['value']['author'] = $user_id;
+        if ($new_lot_id = insert_data($link, 'lots', $add_lot['value'])) {
             header("location: /lot.php?lot_id=$new_lot_id");
             exit();
         } else{

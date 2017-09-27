@@ -1,4 +1,5 @@
 <?php
+require_once 'vendor/autoload.php';
 require_once 'functions.php';
 require_once 'mysql_helper.php';
 require_once 'init.php';
@@ -27,7 +28,10 @@ if (isset($_SESSION['user'])) {
 /** @var int $lot_id Contains lot identification number */
 $lot_id = $_GET['lot_id'] ?? null;
 $sql_lot = 'SELECT l.id, l.name, l.description, l.image, l.price_start, l.price_increment, l.date_end, l.author, c.name AS category 
-FROM lots AS l JOIN categories AS c ON l.category_id=c.id WHERE l.id=?';
+FROM lots AS l 
+JOIN categories AS c ON l.category_id=c.id 
+WHERE l.id=?';
+/** @var array $lot_bet a two dimension array contains information about bets */
 $lot_bet = select_data($link, $sql_lot, [$lot_id]);
 if (!$lot_bet){
     http_response_code(404);
@@ -38,7 +42,12 @@ $lot = $lot_bet[0];
 if ($lot['author'] == $user_id) {
     $bet_block_hidden = true;
 }
-$sql_bets = 'SELECT b.price, b.date, u.name  FROM bets AS b LEFT JOIN users AS u ON b.user_id = u.id WHERE b.lot_id=? ORDER BY b.id DESC';
+/** @var string $sql_bets a mysql query*/
+$sql_bets = 'SELECT b.price, b.date, u.name  
+FROM bets AS b 
+LEFT JOIN users AS u ON b.user_id = u.id 
+WHERE b.lot_id=? 
+ORDER BY b.id DESC';
 $bets = select_data($link, $sql_bets, [$lot_id]);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('cost', $_POST)) {
@@ -63,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('cost', $_POST)) {
     }
 }
 
-$categories = select_data($link, 'SELECT * FROM categories');
+$categories = getCategoriesList($link);
 $page_content = renderTemplate(
         'lot',
         [

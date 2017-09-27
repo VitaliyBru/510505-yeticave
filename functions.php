@@ -94,25 +94,25 @@ function getDataAddLotForm($post, $categories)
 {
     $errors_count = 0;
     if (array_key_exists('add_lot', $post)) {
-        $add_lot = $post['add_lot'];
-        foreach ($add_lot[0] as $key => $value) {
+        $add_lot['value'] = $post['add_lot'];
+        foreach ($add_lot['value'] as $key => $value) {
             if (($key == 'price_start' || $key == 'price_increment') && (int) $value <= 0) {
-                $add_lot[0][$key] = null;
+                $add_lot['value'][$key] = null;
                 $errors_count++;
             }
             if ($key == 'date_end' && !checkUserDate($value)) {
-                $add_lot[0][$key] = null;
+                $add_lot['value'][$key] = null;
                 $errors_count++;
             }
             if ($key == 'category' && !in_array($value, array_column($categories, 'name'))) {
-                $add_lot[0][$key] = null;
+                $add_lot['value'][$key] = null;
                 $errors_count++;
             }
             if (($key == 'name' || $key == 'description' || $key == 'image') && $value == '') {
                 $errors_count++;
             }
             if ($errors_count) {
-                $add_lot[1]['errors'] = $errors_count;
+                $add_lot['errors'] = $errors_count;
             }
         }
     }
@@ -166,21 +166,47 @@ function getImageFilePostForm($files, $file_path = '/img/')
     return $file_path_name;
 }
 
+/**
+ * @param $lots_count
+ * @param $get contains «$_GET»
+ * @param int $lots_limit count of lots on single page
+ *
+ * @return array
+ */
+function paginationCalculator($lots_count, $get, $lots_limit = 3)
+{
+    $current_page = $get['page'] ?? 1;
+    /** @var int $pages_count A count of pages in paginator*/
+    $pages_count = (int) ceil($lots_count / $lots_limit);
+    $offset = ($current_page - 1) * $lots_limit;
+    $pages_list = range(1, $pages_count);
+    return ['count' => $pages_count, 'list' => $pages_list, 'limit' => $lots_limit, 'offset' => $offset, 'current' => $current_page];
+}
+
 function indexDataBuilder($link, $id, $get, $lots_on_page = 3)
 {
     if ($id) {
-        $sql_lots_count = 'SELECT COUNT(l.id) AS lots_count FROM lots AS l JOIN categories AS c ON l.category_id=c.id 
-WHERE l.date_end > NOW() AND l.category_id=?';
+        $sql_lots_count = 'SELECT COUNT(l.id) AS lots_count FROM lots AS l 
+    LEFT JOIN categories AS c ON l.category_id=c.id 
+    WHERE l.date_end > NOW() 
+    AND l.category_id=?';
         $lots_count = select_data($link, $sql_lots_count, [$id]);
         $sql_lot = 'SELECT l.id, l.name, l.image, l.price_start, l.date_end, c.name AS category FROM lots AS l 
-    JOIN categories AS c ON l.category_id=c.id WHERE l.date_end > NOW() AND l.category_id=? ORDER BY l.id DESC LIMIT ? OFFSET ?';
+    LEFT JOIN categories AS c ON l.category_id=c.id 
+    WHERE l.date_end > NOW() 
+    AND l.category_id=? 
+    ORDER BY l.id DESC 
+    LIMIT ? OFFSET ?';
         $pages = paginationCalculator($lots_count[0]['lots_count'], $get, $lots_on_page);
         $lots = select_data($link, $sql_lot, [$id, $pages['limit'], $pages['offset']]);
     } else {
         $sql_lots_count = 'SELECT COUNT(id) AS lots_count FROM lots WHERE date_end > NOW()';
         $lots_count = select_data($link, $sql_lots_count);
         $sql_lot = 'SELECT l.id, l.name, l.image, l.price_start, l.date_end, c.name AS category FROM lots AS l 
-    JOIN categories AS c ON l.category_id=c.id WHERE l.date_end > NOW() ORDER BY l.id DESC LIMIT ? OFFSET ?';
+    LEFT JOIN categories AS c ON l.category_id=c.id 
+    WHERE l.date_end > NOW() 
+    ORDER BY l.id DESC 
+    LIMIT ? OFFSET ?';
         $pages = paginationCalculator($lots_count[0]['lots_count'], $get, $lots_on_page);
         $lots = select_data($link, $sql_lot, [$pages['limit'], $pages['offset']]);
     }
@@ -188,6 +214,10 @@ WHERE l.date_end > NOW() AND l.category_id=?';
 }
 
 
+/**
+ * @param string $lot_time
+ * @return null|string
+ */
 function timeLeft(string $lot_time)
 {
     $lot_time_remaining = null;
@@ -289,17 +319,10 @@ function exec_query($link, $sql, $data = [])
 }
 
 /**
- * @param $lots_count
- * @param $get contains «$_GET»
- * @param int $lots_limit count of lots on single page
- *
+ * @param $link
  * @return array
  */
-function paginationCalculator($lots_count, $get, $lots_limit = 3)
+function getCategoriesList($link)
 {
-    $current_page = $get['page'] ?? 1;
-    $pages_count = ceil($lots_count / $lots_limit);
-    $offset = ($current_page - 1) * $lots_limit;
-    $pages_list = range(1, $pages_count);
-    return ['count' => $pages_count, 'list' => $pages_list, 'limit' => $lots_limit, 'offset' => $offset, 'current' => $current_page];
+    return select_data($link, 'SELECT * FROM categories');
 }

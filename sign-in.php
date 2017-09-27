@@ -1,4 +1,5 @@
 <?php
+require_once 'vendor/autoload.php';
 require_once 'functions.php';
 require_once 'mysql_helper.php';
 require_once 'init.php';
@@ -27,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('sign', $_POST)) {
     }
 }
 
-$categories = select_data($link, 'SELECT * FROM categories');
+$categories = getCategoriesList($link);
 $page_content = renderTemplate(
     'sign-in',
     [

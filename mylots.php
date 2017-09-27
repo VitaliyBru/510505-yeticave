@@ -1,4 +1,5 @@
 <?php
+require_once 'vendor/autoload.php';
 require_once 'functions.php';
 require_once 'mysql_helper.php';
 require_once 'init.php';
@@ -25,17 +26,18 @@ if (isset($_SESSION['user'])) {
     exit();
 }
 
-$sql_my_bets = 'SELECT bl.id, bl.price, bl.date, bl.lot_id, bl.image, bl.name, bl.date_end, 
-bl.winner, c.name AS category, u.contacts FROM (SELECT b.id, b.price, b.date, l.id AS lot_id, l.image, l.name, l.date_end, 
-l.winner, l.category_id FROM (SELECT id, MAX(price) AS price, lot_id, date FROM bets WHERE user_id=? GROUP BY lot_id) AS b 
-JOIN lots AS l ON b.lot_id=l.id) AS bl JOIN categories AS c ON bl.category_id=c.id LEFT JOIN users AS u ON bl.winner=u.id 
-ORDER BY bl.id DESC';
+$sql_my_bets = 'SELECT lots.id, lots.name, lots.image, lots.date_end, lots.winner, bets.price, bets.date, categories.name AS category, users.contacts FROM bets 
+INNER JOIN lots ON bets.lot_id=lots.id
+INNER JOIN users ON lots.author=users.id
+INNER JOIN categories ON lots.category_id=categories.id
+WHERE bets.price IN (SELECT MAX(price) FROM bets WHERE user_id=? GROUP BY lot_id)';
 $my_bets = select_data($link, $sql_my_bets, [$user_id]);
-$categories = select_data($link, 'SELECT * FROM categories');
+$categories = getCategoriesList($link);
 
 $page_content = renderTemplate(
     'mylots',
     [
+        'user_id' => $user_id,
         'my_bets' => $my_bets,
         'categories' => $categories,
     ]

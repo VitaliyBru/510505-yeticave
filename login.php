@@ -1,4 +1,5 @@
 <?php
+require_once 'vendor/autoload.php';
 require_once 'functions.php';
 require_once 'mysql_helper.php';
 require_once 'init.php';
@@ -7,7 +8,7 @@ date_default_timezone_set('Europe/Moscow');
 $is_auth = false;
 
 $user = [];
-/** @var array $user_login */
+/** @var array $login contains login-form sent data*/
 $login = ['email' => null, 'name' => null, 'fix_error' => false, 'wrong_data' => false];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('login', $_POST)) {
@@ -29,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && array_key_exists('login', $_POST)) {
     }
 }
 
-$categories = select_data($link, 'SELECT * FROM categories');
+$categories = getCategoriesList($link);
 $page_content = renderTemplate('login', ['categories' => $categories, 'login' => $login]);
 echo renderTemplate(
     'layout',

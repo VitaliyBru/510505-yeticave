@@ -1,4 +1,5 @@
 <?php
+require_once 'vendor/autoload.php';
 require_once 'functions.php';
 require_once 'mysql_helper.php';
 require_once 'init.php';
@@ -20,7 +21,7 @@ if (isset($_SESSION['user'])) {
 // устанавливаем часовой пояс в Московское время
 date_default_timezone_set('Europe/Moscow');
 
-$categories = select_data($link, 'SELECT * FROM categories');
+$categories = getCategoriesList($link);
 $id = (int) ($_GET['id'] ?? null);
 $page_data = indexDataBuilder($link, $id, $_GET);
 /** @var string $page_content Contains html code */

@@ -1,6 +1,9 @@
 {
-    "name": "yeticave",
-    "description": "Личный проект «YetiCave» от HTML Academy",
+    "name": "vitaliy/510505-yeticave",
+    "description": "internet auction",
     "type": "project",
-    "require": {}
+    "require": {
+        "swiftmailer/swiftmailer": "@stable",
+        "respect/validation": "^1.1"
+    }
 }

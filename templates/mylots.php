@@ -11,21 +11,28 @@
     <h2>Мои ставки</h2>
     <table class="rates__list">
         <?php foreach ($my_bets as $lot_bet): ?>
-        <tr class="rates__item<?= (strtotime($lot_bet['date_end']) > strtotime('now')) ? '' : ' rates__item--end'; ?>">
+        <tr class="rates__item<?= (strtotime($lot_bet['date_end']) > strtotime('now')) ? '' : ($lot_bet['winner'] == $user_id) ? ' rates__item--win' : ' rates__item--end'; ?>">
             <td class="rates__info">
                 <div class="rates__img">
                     <img src="../<?= $lot_bet['image']; ?>" width="54" height="40" alt="Куртка">
                 </div>
-                <h3 class="rates__title"><a href="lot.php?lot_id=<?= $lot_bet['lot_id']; ?>"><?= htmlspecialchars($lot_bet['name']); ?></a></h3>
+                <div>
+                <h3 class="rates__title"><a href="lot.php?lot_id=<?= $lot_bet['id']; ?>"><?= htmlspecialchars($lot_bet['name']); ?></a></h3>
+                <?php if ($lot_bet['winner'] == $user_id){
+                    echo "<p>{$lot_bet['contacts']}</p>";
+                } ?>
+                </div>
             </td>
             <td class="rates__category">
                 <?= htmlspecialchars($lot_bet['category']); ?>
             </td>
             <td class="rates__timer">
                 <?php if (strtotime($lot_bet['date_end']) > strtotime('now')): ?>
-                <div class="timer timer--finishing"><?= timeLeft ($lot_bet['date_end']); ?></div>
+                    <div class="timer timer--finishing"><?= timeLeft ($lot_bet['date_end']); ?></div>
+                <?php elseif ($lot_bet['winner'] == $user_id): ?>
+                    <div class="timer timer--win">Ставка выиграла</div>
                 <?php else: ?>
-                <div class="timer timer--end">Торги окончены</div>
+                    <div class="timer timer--end">Торги окончены</div>
                 <?php endif; ?>
             </td>
             <td class="rates__price">
